@@ -1,0 +1,29 @@
+{
+  "name": "qumge",
+  "displayName": "Qumge",
+  "description": "An app store for agents: find and call paid apps billed per call, install curated agent skills, and reach many LLMs — one key, one balance.",
+  "version": "0.1.0",
+  "author": "Qumge",
+  "homepage": "https://qumge.com",
+  "repository": "https://github.com/xnjiang/qumg-skill",
+  "license": "MIT",
+  "keywords": [
+    "qumge",
+    "agent",
+    "agent-skills",
+    "skills",
+    "app-store",
+    "mcp",
+    "llm-gateway",
+    "pay-per-call",
+    "claude",
+    "openai"
+  ],
+  "skills": [
+    {
+      "name": "qumge",
+      "path": "SKILL.md",
+      "description": "Find and call paid apps billed per call from one Qumge balance, install curated agent skills, list gateway models, and publish your own app — from any agent."
+    }
+  ]
+}

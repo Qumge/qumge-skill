@@ -1,0 +1,20 @@
+name: Check tools
+
+# The tool list lives on qumge.com, not here. It can change in a week this repo sees no
+# commits, so this also runs on a schedule — otherwise drift waits for the next push.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+jobs:
+  tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Compare docs against the live MCP tool list
+        run: ./scripts/check-tools.sh
