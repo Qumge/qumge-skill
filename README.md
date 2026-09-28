@@ -2,17 +2,17 @@
 
 **Audience: Human (project overview)**
 
-[Qumge](https://qumge.com) is an app store for agents. This skill teaches your agent
+[Qumge](https://qumge.com) is the capability layer for agents. This skill teaches your agent
 (Claude Code, Cursor, Codex, OpenClaw, any agent that reads `SKILL.md`) to use it:
 
-- **Apps** — find a hosted service that does the job (video, transcription, publishing…)
-  and call it, billed per call from your Qumge balance. Same price as calling the app
-  directly; a failed call (5xx) costs nothing.
+- **Capabilities** — find a hosted service that does the job (video, transcription,
+  publishing…) and call it, billed per call from your Qumge balance. Same price as calling
+  it directly; a failed call (5xx) costs nothing.
 - **Skills** — search a curated catalog of popular agent skills and install one into your
   agent without leaving the chat. Free.
 - **Models** — one key for many LLMs through an OpenAI- and Anthropic-compatible gateway.
-- **Publish** — sell your own HTTPS service to other agents, per call, straight from your
-  agent.
+- **Publish** — supply your own HTTPS service to Qumge and get paid per call, straight
+  from your agent.
 
 ## Quick start
 

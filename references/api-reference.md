@@ -14,27 +14,32 @@ curl -s -X POST https://qumge.com/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/call",
-       "params":{"name":"search_apps","arguments":{"query":"make a promo video"}}}'
+       "params":{"name":"search_caps","arguments":{"query":"make a promo video"}}}'
 ```
 
 The answer is in `result.content[0].text`. The same shape works for every tool:
 
 | Tool | Key | Arguments |
 |---|---|---|
-| `search_apps` | – | `query?`, `limit?` (≤10) |
-| `get_app` | optional | `slug` |
+| `search_caps` | – | `query?`, `limit?` (≤10), `max_price_usd?` |
+| `get_cap` | optional | `slug` |
 | `search_skills` | – | `query?`, `category?`, `offset?`, `limit?` (≤10) |
 | `get_skill` | – | `slug`, `include_files?` |
 | `list_categories` | – | – |
 | `list_models` | – | `query?`, `limit?` (≤60) |
-| `call_app` | **yes** | `slug`, `path`, `method?`, `query?`, `body?`, `content_type?`, `accept?` |
+| `call_cap` | **yes** | `slug` + `operation`, `input` — or the older `path`, `method?`, `query?`, `body?`, `content_type?`, `accept?` |
 | `get_balance` | **yes** | – |
+| `get_earnings` | **yes** | – |
+| `request_payout` | **yes** | `amount_usd`, `confirmed?` |
 | `become_developer` | **yes** | `display_name`, `country`, `entity_type?`, `social_links?` |
-| `list_apps` | **yes** | – |
-| `publish_app` | **yes** | `name`, `base_url`, and the price book — see `tools/list` |
-| `test_app` | **yes** | `slug` |
-| `submit_app_review` | **yes** | `slug` |
-| `app_status` | **yes** | `slug` |
+| `list_caps` | **yes** | – |
+| `publish_cap` | **yes** | `name` + `base_url` (HTTP API) or `mcp_url` + `mcp_tools` (remote MCP); price book — see `tools/list` |
+| `test_cap` | **yes** | `slug` |
+| `submit_cap` | **yes** | `slug` |
+| `cap_status` | **yes** | `slug` |
+
+The pre-rename names (`search_apps`, `get_app`, `call_app`, `publish_app`, `test_app`,
+`submit_app_review`, `app_status`, `list_apps`) still dispatch; they are not listed.
 
 For a tool that needs a key, send the `Authorization` header, or put
 `"qumge_key": "sk_qumge_…"` in `arguments`.
@@ -46,15 +51,15 @@ curl -s -X POST https://qumge.com/mcp -H 'Content-Type: application/json' \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 ```
 
-## Calling an app directly
+## Calling a capability directly
 
 ```
-<METHOD> https://qumge.com/v1/apps/<slug>/<route>
+<METHOD> https://qumge.com/v1/caps/<slug>/<route>
 Authorization: Bearer sk_qumge_…
 ```
 
-Routes, prices and error codes for every live app, as OpenAPI 3.1:
-`GET https://qumge.com/v1/apps/openapi.json` (no key).
+Operations, prices and error codes for every live capability, as OpenAPI 3.1:
+`GET https://qumge.com/v1/caps/openapi.json` (no key). `/v1/apps/...` still works.
 
 Errors come back as `{"error": {"code": "...", "message": "..."}}` — e.g.
 `insufficient_balance`, `app_cap_reached`. See the OpenAPI `QumgeError` schema.
