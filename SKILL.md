@@ -30,6 +30,10 @@ Qumge is infrastructure for agents, behind one key and one balance:
 
 ## Two ways in — pick the first that works
 
+**What is stable:** each tool returns `structuredContent` (JSON) next to the text in
+`content`, and declares an `outputSchema` in `tools/list`. Parse that JSON when you can —
+the wording of the text is for a model to read and is not a contract.
+
 1. **Qumge MCP tools are available** (you see `search_caps`, `call_cap`, `search_skills`
    …): use them. Everything below maps 1:1 onto them.
 2. **No MCP**: call the HTTP API with `curl`. See `references/api-reference.md`.
