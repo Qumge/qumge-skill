@@ -31,6 +31,7 @@ The answer is in `result.content[0].text`. The same shape works for every tool:
 | `get_balance` | **yes** | – |
 | `get_earnings` | **yes** | – |
 | `request_payout` | **yes** | `amount_usd`, `confirmed?` |
+| `list_wanted` | – | `limit?` (≤50) |
 | `become_developer` | **yes** | `display_name`, `country`, `entity_type?`, `social_links?` |
 | `list_caps` | **yes** | – |
 | `publish_cap` | **yes** | `name` + `base_url` (HTTP API) or `mcp_url` + `mcp_tools` (remote MCP); price book — see `tools/list` |
