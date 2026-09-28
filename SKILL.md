@@ -163,6 +163,11 @@ If the user has an HTTPS service they want to supply to Qumge and be paid per ca
    payout — call it once to get the fee/tax estimate, show that to the user, then call
    again with `confirmed: true`. Only capability income is withdrawable.
 
+**Already run a remote MCP server?** Pass `mcp_url` (https) instead of `base_url`, plus
+`mcp_tools: [{name:, unit_price_usd:}]`. Qumge reads `tools/list`, publishes only the tools
+you price, and bills each successful `tools/call` at that price. The domain must be one the
+developer has verified in their profile.
+
 ## Errors
 
 **Don't surface raw errors to the user.** Handle them:
