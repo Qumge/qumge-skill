@@ -5,7 +5,7 @@ homepage: https://qumge.com
 license: MIT
 metadata:
   author: Qumge
-  version: 0.2.1
+  version: 0.3.0
   category: agent-infrastructure
   clawdbot:
     requires:
@@ -141,24 +141,27 @@ out.
 
 ## Publishing the user's own capability
 
-If the user has an HTTPS service they want to supply to Qumge and be paid per call:
+If the user wants to sell something their project does on Qumge and be paid per call, first
+work out what the project already has. The answer decides how much code there is:
+
+| The project already has… | Path | Code to write |
+|---|---|---|
+| A remote MCP server (`https://`) | `publish_cap` with `mcp_url` + `mcp_tools: [{name:, unit_price_usd:}]`. Qumge reads `tools/list`, publishes only the tools you price, and bills each successful `tools/call`. The domain must be verified in the developer's profile. | none |
+| A public API that takes an API key | `publish_cap` with `auth_mode: "api_key"`, the user's key as `upstream_token`, and **exact-path** routes billed per call (`meter: "platform"`). Qumge calls that one endpoint with `Authorization: Bearer <key>`; nothing else in their API is reachable. | none |
+| Neither | Add one small signed endpoint to the project. **Follow `references/build-a-capability.md` step by step.** | one endpoint + signature check |
+
+Then, for every path:
 
 1. `become_developer(display_name, country)` — immediate, no review, no form. Legal name
    and payout details are only needed when they withdraw — that's theirs to fill in.
-2. `publish_cap(name, base_url, summary, keywords, events, routes)` — creates a **draft**
-   with its price book, and returns a signing secret and usage key **shown once**. Give
-   each route a `doc` (input/output schema, when to use) so agents know what to send. Tell
-   the user to store both keys; don't print them into shared logs.
-3. **Write the integration into their project, then have them deploy it.** The service must
-   answer `GET /qumge/ping` (verify the signature; reject forged signatures and timestamps
-   older than 300 seconds) and, for routes billed by reported usage, report with
-   `POST https://qumge.com/v1/caps/usage`. Keep both keys in config or environment
-   variables. You usually cannot deploy for them: say the code is ready, ask them to
-   deploy, and wait. The ping contract, the signature rule and a set of test vectors are
-   at https://qumge.com/en/docs/caps.
-4. `test_cap(slug)` — three pings (signed, forged, stale), then an end-to-end call of each
-   operation. A billable route is genuinely charged once, to the supplier's own account.
-   If it fails, the reply names which probe failed.
+2. `publish_cap(...)` — creates a **draft** with its price book. Give each route a `doc`
+   (input/output schema, when to use) so agents know what to send. In signature mode it
+   returns a signing secret and usage key **shown once** — tell the user to store them in
+   config or environment variables; don't print them into shared logs.
+3. Signature mode only: write the endpoint, then **ask the user to deploy and wait** — you
+   usually cannot deploy for them.
+4. `test_cap(slug)` — the self-tests (signature pings, then one end-to-end call per probed
+   route). Nobody is charged. If it fails, the reply names which probe failed.
 5. `submit_cap(slug)` — **takes it live immediately**, once the user confirms. Nobody
    approves it first; agents can be charged from that moment.
 6. `cap_status(slug)` / `list_caps` — checklist and state at any time.
@@ -167,10 +170,7 @@ If the user has an HTTPS service they want to supply to Qumge and be paid per ca
    payout — call it once to get the fee/tax estimate, show that to the user, then call
    again with `confirmed: true`. Only capability income is withdrawable.
 
-**Already run a remote MCP server?** Pass `mcp_url` (https) instead of `base_url`, plus
-`mcp_tools: [{name:, unit_price_usd:}]`. Qumge reads `tools/list`, publishes only the tools
-you price, and bills each successful `tools/call` at that price. The domain must be one the
-developer has verified in their profile.
+Never publish a `/**` route, or any admin, account or payment endpoint. Sell one operation.
 
 ## Errors
 
@@ -188,5 +188,6 @@ developer has verified in their profile.
 ## More
 
 - HTTP reference: `references/api-reference.md`
+- Building a capability from scratch: `references/build-a-capability.md`
 - Machine-readable app catalog: https://qumge.com/v1/caps/openapi.json
 - Site index for agents: https://qumge.com/llms.txt

@@ -53,6 +53,7 @@ Qumge is pay-as-you-go: you top up your balance first, then pay per call.
 |---|---|
 | `SKILL.md` | The agent — what Qumge is and how to use it |
 | `references/api-reference.md` | The agent — the HTTP API, for agents without MCP |
+| `references/build-a-capability.md` | The agent — turning part of the user's project into a capability |
 | `marketplace.json` | Skill marketplaces |
 
 ## Links

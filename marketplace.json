@@ -2,7 +2,7 @@
   "name": "qumge",
   "displayName": "Qumge",
   "description": "The capability layer for agents: find and call paid capabilities billed per call, install curated agent skills, and reach many LLMs — one key, one balance.",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "author": "Qumge",
   "homepage": "https://qumge.com",
   "repository": "https://github.com/xnjiang/qumg-skill",

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 — 2026-09-30
+
+- Publishing starts from what the project already has: a remote MCP server (`mcp_url`), a
+  public API with an API key (`auth_mode: "api_key"` — no code to write), or neither.
+- New `references/build-a-capability.md`: a step-by-step guide for the agent to add one
+  signed endpoint to the user's project and take it live.
+
 ## 0.2.1 — 2026-09-28
 
 - Publishing: an existing remote MCP server can be published with `mcp_url` + `mcp_tools`
