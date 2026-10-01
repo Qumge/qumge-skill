@@ -34,7 +34,7 @@ The answer is in `result.content[0].text`. The same shape works for every tool:
 | `list_wanted` | – | `limit?` (≤50) |
 | `become_developer` | **yes** | `display_name`, `country`, `entity_type?`, `social_links?` |
 | `list_caps` | **yes** | – |
-| `verify_domain` | **yes** | `url`; then `url` + `check: true` after the line is deployed |
+| `verify_domain` | **yes** | `url`; then `url` + `check: true` after the line is deployed. Not needed to go live; releases frozen earnings |
 | `publish_cap` | **yes** | `name` + `base_url` (HTTP API) or `mcp_url` + `mcp_tools` (remote MCP); price book — see `tools/list` |
 | `test_cap` | **yes** | `slug` |
 | `submit_cap` | **yes** | `slug` |

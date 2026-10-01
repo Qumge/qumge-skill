@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0 — 2026-10-01
+
+- Going live no longer waits for `verify_domain`. A cap on an unverified domain is live and
+  charges callers, but its earnings stay frozen until the domain is verified; verifying
+  releases them (30 days after each call). A domain another developer verified can't be used.
+- `get_earnings` shows the frozen amount. DNS TXT verification only counts on the host itself.
+- The Publish page takes a pasted service URL and goes live in one click; the GitHub project
+  scan is gone (GitHub is only for importing skills).
+
 ## 0.4.1 — 2026-10-01
 
 - Publishing rule: every billed operation delivers one complete result for one clear input.

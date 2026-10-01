@@ -77,7 +77,8 @@ at the end instead.
 
 1. `verify_domain(url: "https://<their host>")` → one line. Serve it at
    `https://<host>/.well-known/qumge-verify.txt` (a static file, or a route returning it as
-   text). Skip this if it already says **verified**.
+   text). Skip this if it already says **verified**. The cap can go live before this passes,
+   but its earnings stay frozen until it does.
 2. **One deploy** for the endpoint, the verification file and the environment variable. If
    pushing to GitHub deploys the project, ask "Shall I commit and push so it deploys?" and do
    it on a yes. Otherwise ask the user to deploy and wait.

@@ -5,7 +5,7 @@ homepage: https://qumge.com
 license: MIT
 metadata:
   author: Qumge
-  version: 0.4.1
+  version: 0.5.0
   category: agent-infrastructure
   clawdbot:
     requires:
@@ -147,8 +147,7 @@ hand them a menu of options, and don't ask them to fill anything in that you can
 
 ### 1. Work out what the project has — don't ask
 
-If the user connected GitHub on the Publish page, use that scan (the list the page shows);
-otherwise read the project. Then pick the row — the first one that matches:
+Read the project. Then pick the row — the first one that matches:
 
 | The project has… | Do this | Code to write |
 |---|---|---|
@@ -185,14 +184,17 @@ one number per call: "I'd charge $0.05 per call — OK?". Use what they answer.
 
 ### 3. Prove the domain — `verify_domain`
 
-An MCP cap needs a verified domain (an API cap benefits too).
+Going live does **not** wait for this. A cap on an unverified domain goes live and charges
+callers as usual, but the user's earnings from it stay **frozen** until the domain is verified;
+verifying releases them (each call's share matures 30 days after the call). A domain another
+developer has verified can't be used at all. So do it in the same deploy, not later.
 
 1. `verify_domain(url: "<the service url>")`. If it says **verified**, go on.
 2. Otherwise it returns one line. Put it in the project so it is served at
    `https://<host>/.well-known/qumge-verify.txt` (a static file, or a route returning the line
    as text) — it ships with the next deploy, together with any code you added.
 3. After the deploy: `verify_domain(url:, check: true)`. Not found yet → check the file is
-   live at that address; a DNS TXT record with the same line also works.
+   live at that address; a DNS TXT record with the same line on the host itself also works.
 
 ### 4. Deploy — one deploy for everything
 
@@ -214,7 +216,11 @@ Everything you changed (verification file, endpoint) goes out in **one** deploy.
    "My drafts" on the Publish page.
 5. `cap_status(slug)` / `list_caps` — checklist and state at any time.
 
-Earnings: `get_earnings` shows pending (30-day holdback), payable and paid out.
+The user can also do all of this on the Publish page: paste the service URL, set the price,
+one click — it self-tests and goes live.
+
+Earnings: `get_earnings` shows pending (30-day holdback), frozen (domain not verified yet),
+payable and paid out.
 `request_payout(amount_usd)` once for the fee/tax estimate, show it, then again with
 `confirmed: true`. Only capability income is withdrawable.
 
