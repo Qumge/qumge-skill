@@ -5,7 +5,7 @@ homepage: https://qumge.com
 license: MIT
 metadata:
   author: Qumge
-  version: 0.3.0
+  version: 0.4.0
   category: agent-infrastructure
   clawdbot:
     requires:
@@ -141,36 +141,63 @@ out.
 
 ## Publishing the user's own capability
 
-If the user wants to sell something their project does on Qumge and be paid per call, first
-work out what the project already has. The answer decides how much code there is:
+You are usually running **inside the project the user wants to sell from**. Do the work; the
+user only answers three things: **the price**, **"it's deployed"**, and **"go live"**. Don't
+hand them a menu of options, and don't ask them to fill anything in that you can work out.
 
-| The project already has… | Path | Code to write |
+### 1. Work out what the project has — don't ask
+
+If the user connected GitHub on the Publish page, use that scan (the list the page shows);
+otherwise read the project. Then pick the row — the first one that matches:
+
+| The project has… | Do this | Code to write |
 |---|---|---|
-| A remote MCP server (`https://`) | `publish_cap` with `mcp_url` + `mcp_tools: [{name:, unit_price_usd:}]`. Qumge reads `tools/list`, publishes only the tools you price, and bills each successful `tools/call`. The domain must be verified in the developer's profile. | none |
-| A public API that takes an API key | `publish_cap` with `auth_mode: "api_key"`, the user's key as `upstream_token`, and **exact-path** routes billed per call (`meter: "platform"`). Qumge calls that one endpoint with `Authorization: Bearer <key>`; nothing else in their API is reachable. | none |
-| Neither | Add one small signed endpoint to the project. **Follow `references/build-a-capability.md` step by step.** | one endpoint + signature check |
+| A remote MCP server (`https://…`), with or without an API | `publish_cap` with `mcp_url` + `mcp_tools: [{name:, unit_price_usd:}]`. Ignore the API for now; at the end, tell the user what it does that the MCP doesn't, in one line. | none |
+| A public API that takes an API key | `publish_cap` with `auth_mode: "api_key"`, the user's key as `upstream_token`, and one **exact-path** route billed per call (`meter: "platform"`). | none — ask the user for the key |
+| Neither | Add one small endpoint under `/qumge/` that checks an API key you generate. **Follow `references/build-a-capability.md`.** | one endpoint |
 
-Then, for every path:
+Sell **one operation** first. Never publish a `/**` route, or any admin, account or payment
+endpoint.
 
-1. `become_developer(display_name, country)` — immediate, no review, no form. Legal name
-   and payout details are only needed when they withdraw — that's theirs to fill in.
-2. `publish_cap(...)` — creates a **draft** with its price book. Give each route a `doc`
-   (input/output schema, when to use) so agents know what to send. In signature mode it
-   returns a signing secret and usage key **shown once** — tell the user to store them in
-   config or environment variables; don't print them into shared logs.
-3. Signature mode only: write the endpoint, then **ask the user to deploy and wait** — you
-   usually cannot deploy for them.
-4. `test_cap(slug)` — the self-tests (signature pings, then one end-to-end call per probed
-   route). Nobody is charged. If it fails, the reply names which probe failed.
-5. `submit_cap(slug)` — **takes it live immediately**, once the user confirms. Nobody
-   approves it first; agents can be charged from that moment.
-6. `cap_status(slug)` / `list_caps` — checklist and state at any time.
-7. Earnings: `get_earnings` shows what is pending (30-day holdback), what is payable in
-   the wallet, and what has been paid out. `request_payout(amount_usd)` asks for a
-   payout — call it once to get the fee/tax estimate, show that to the user, then call
-   again with `confirmed: true`. Only capability income is withdrawable.
+### 2. Suggest a price — don't ask the user to invent one
 
-Never publish a `/**` route, or any admin, account or payment endpoint. Sell one operation.
+Estimate what one call costs to run (model and API bills, compute), add a margin, and propose
+one number per call: "I'd charge $0.05 per call — OK?". Use what they answer.
+
+### 3. Prove the domain — `verify_domain`
+
+An MCP cap needs a verified domain (an API cap benefits too).
+
+1. `verify_domain(url: "<the service url>")`. If it says **verified**, go on.
+2. Otherwise it returns one line. Put it in the project so it is served at
+   `https://<host>/.well-known/qumge-verify.txt` (a static file, or a route returning the line
+   as text) — it ships with the next deploy, together with any code you added.
+3. After the deploy: `verify_domain(url:, check: true)`. Not found yet → check the file is
+   live at that address; a DNS TXT record with the same line also works.
+
+### 4. Deploy — one deploy for everything
+
+Everything you changed (verification file, endpoint) goes out in **one** deploy.
+- If pushing to GitHub deploys the project (Render, Vercel, Fly, Netlify, …), ask "Shall I
+  commit and push so it deploys?" and do it on a yes.
+- Otherwise: "Deploy once now and tell me when it's live." Then wait.
+
+### 5. Publish, test, go live
+
+1. `become_developer(display_name, country)` — once per account, if `publish_cap` asks. No
+   review, no form.
+2. `publish_cap(...)` — a **draft**, live for nobody yet. Give each route a `doc` (input
+   schema, when to use) so agents know what to send.
+3. `test_cap(slug)` — calls each operation once. Nobody is charged. If it fails, the reply
+   says which call failed; fix it and redeploy.
+4. Ask: "Go live at $X per call?" On a yes, `submit_cap(slug)` — **live immediately**,
+   agents can be charged from that moment. The user can also click go live under
+   "My drafts" on the Publish page.
+5. `cap_status(slug)` / `list_caps` — checklist and state at any time.
+
+Earnings: `get_earnings` shows pending (30-day holdback), payable and paid out.
+`request_payout(amount_usd)` once for the fee/tax estimate, show it, then again with
+`confirmed: true`. Only capability income is withdrawable.
 
 ## Errors
 

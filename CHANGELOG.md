@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0 — 2026-10-01
+
+- Publishing is one flow the agent runs inside the user's project: it works out what the
+  project has (MCP first, then an API with a key, else build an endpoint), proposes a price,
+  and asks the user only three things — the price, "it's deployed", "go live".
+- New tool `verify_domain`: get the verification line, ship it with the next deploy, then
+  `verify_domain(check: true)`.
+- `build-a-capability.md`: the default endpoint now checks an API key the agent generates
+  (`auth_mode: "api_key"`); the signed variant is for usage-based billing, per-caller records
+  or slow jobs.
+
 ## 0.3.0 — 2026-09-30
 
 - Publishing starts from what the project already has: a remote MCP server (`mcp_url`), a
