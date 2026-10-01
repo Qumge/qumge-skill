@@ -17,8 +17,11 @@ Check the other two paths first (see SKILL.md → Publishing). They need no code
 
 ## 1. Agree on one thing to sell
 
-Sell **one operation**, not the whole app, for example "make a 15-second product video from a
-brief". Pick the obvious one; ask only if there is no obvious one. Settle three things before you write code:
+Sell **one operation**, not the whole app, for example "product page URL in → finished
+15-second product video out". It must deliver **one complete result**: the caller sends one input and gets back the
+finished output in the response (or, for slow work, a job id whose free status route returns
+the finished output). If producing it takes several of the project's own calls, your endpoint
+makes all of them — the caller never chains steps or pays for a step. Pick the obvious one; ask only if there is no obvious one. Settle three things before you write code:
 
 - **Input and output.** What the caller sends, and what comes back, as JSON.
 - **Price per call**, in USD. **Propose a number** ("$0.05 per call — OK?"); it must cover what one call

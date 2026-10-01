@@ -5,7 +5,7 @@ homepage: https://qumge.com
 license: MIT
 metadata:
   author: Qumge
-  version: 0.4.0
+  version: 0.4.1
   category: agent-infrastructure
   clawdbot:
     requires:
@@ -158,6 +158,25 @@ otherwise read the project. Then pick the row — the first one that matches:
 
 Sell **one operation** first. Never publish a `/**` route, or any admin, account or payment
 endpoint.
+
+**Every billed operation must deliver one complete result.** The caller is an agent: it sends
+one clear input and must get back one clear output it can use — not a fragment it has to
+assemble. Concretely:
+
+- One thing the caller wants = one billed operation, with a `doc` that has `input_schema`,
+  `output_schema` and an `example_input`.
+- Helper steps (job status, polling, listing options) are **free** (`billable: false`) — or
+  left out of the price book.
+- If the result needs several of the project's calls in a row, **don't publish the steps** —
+  wrap them in one endpoint that does all of them (`references/build-a-capability.md`), even
+  when the project already has an API or MCP server.
+- An MCP tool or API endpoint that only does part of a job is not sold on its own.
+
+Example: a marketing-video product whose MCP server has `analyze_product`, `write_script`,
+`render_video` and `get_job`. Don't sell those four. Sell one operation, **product page URL in
+→ finished short video out**, that runs all of them; its job-status route is free.
+
+
 
 ### 2. Suggest a price — don't ask the user to invent one
 

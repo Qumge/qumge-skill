@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1 — 2026-10-01
+
+- Publishing rule: every billed operation delivers one complete result for one clear input.
+  Helper steps are free; a result that needs several calls is wrapped into one endpoint.
+
 ## 0.4.0 — 2026-10-01
 
 - Publishing is one flow the agent runs inside the user's project: it works out what the
