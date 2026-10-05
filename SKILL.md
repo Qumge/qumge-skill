@@ -21,7 +21,7 @@ Qumge is infrastructure for agents, behind one key and one balance:
 
 | | What it is | Costs |
 |---|---|---|
-| **Capabilities** | Hosted services you call over HTTP (video, transcription, publishing…). The capability runs on its supplier's server; Qumge forwards the call, charges the user, and buys the work from the supplier. | Per call, from the user's balance. Same price as calling it directly. |
+| **Capabilities** | Hosted services you call over HTTP (video, transcription, publishing…). The capability runs on its supplier's server; Qumge forwards the call, charges the user, and buys the work from the supplier. | Per call, from the user's balance, at the price its developer sets. |
 | **Skills** | A curated catalog of popular agent skills (SKILL.md files) you can install into the user's agent. | Free. |
 | **Models** | An OpenAI- and Anthropic-compatible LLM gateway. | Per token, from the same balance. |
 
