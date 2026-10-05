@@ -19,10 +19,10 @@
 ### 1. Install the skill
 
 ```bash
-npx skills add xnjiang/qumg-skill
+npx skills add Qumge/qumge-skill
 ```
 
-Or tell your agent: `Install the skill from https://github.com/xnjiang/qumg-skill`
+Or tell your agent: `Install the skill from https://github.com/Qumge/qumge-skill`
 
 ### 2. (Recommended) connect the MCP server too
 
@@ -31,7 +31,7 @@ claude mcp add --transport http qumge https://qumge.com/mcp
 ```
 
 The skill works without it — it falls back to plain HTTP — but the MCP tools are
-smoother. Other clients: see [qumg-mcp](https://github.com/xnjiang/qumg-mcp).
+smoother. Other clients: see [qumge-mcp](https://github.com/Qumge/qumge-mcp).
 
 ### 3. Just ask
 
@@ -59,7 +59,7 @@ Qumge is pay-as-you-go: you top up your balance first, then pay per call.
 ## Links
 
 - Website: https://qumge.com
-- MCP server: https://github.com/xnjiang/qumg-mcp
+- MCP server: https://github.com/Qumge/qumge-mcp
 - For agents: https://qumge.com/llms.txt
 
 ## License
