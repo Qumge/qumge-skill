@@ -1,0 +1,35 @@
+{
+  "qumge": "1",
+  "capabilities": [
+    {
+      "name": "Viral video maker",
+      "slug": "viral-video",
+      "summary": "Give it a product page URL, get back a finished 30-second video",
+      "keywords": ["short video", "UGC", "product video"],
+      "support_url": "mailto:help@example.com",
+      "refund_policy_url": "https://example.com/refund",
+      "endpoint": { "type": "api", "base_url": "https://api.example.com/video", "auth": "api_key" },
+      "operations": [
+        {
+          "name": "make_video",
+          "method": "POST",
+          "path": "/make",
+          "description": "Makes a 30-second video from a product page",
+          "when_to_use": "When the user wants a promo video for a product",
+          "input_schema": { "type": "object", "properties": { "url": { "type": "string" } }, "required": ["url"] },
+          "output_schema": { "type": "object", "properties": { "video_url": { "type": "string" } } },
+          "example_input": { "url": "https://shop.example.com/p/1" },
+          "price_usd": 0.5,
+          "free_calls": 1
+        },
+        {
+          "name": "status",
+          "method": "GET",
+          "path": "/status",
+          "description": "Progress of a video that is being made",
+          "input_schema": { "type": "object" }
+        }
+      ]
+    }
+  ]
+}

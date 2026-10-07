@@ -73,6 +73,17 @@ endpoint can't tell callers apart, and the price is fixed per call. If the user 
 usage-based billing, per-caller records, or the work takes over ~25 s, use the signed variant
 at the end instead.
 
+## 4a. Describe it in qumge.json (recommended)
+
+Write `qumge.json` into the project so it is served at `https://<domain>/.well-known/qumge.json`
+(start from `references/qumge.example.json`; spec: https://qumge.com/docs/caps/manifest). Put each billed
+operation's `input_schema` and `output_schema` (or `description`), a suggested `price_usd`, and — if the user
+wants a free trial — `free_calls`. Add the line `verify_domain` gives you as a top-level
+`"verify": "qumge-verify=…"` and the domain is verified when Qumge reads the file. Never put a key in it: the file is public.
+
+After the deploy, the user pastes the address on Qumge (everything is prefilled; they only confirm prices), or
+you call `publish_cap` with `manifest_url`.
+
 ## 4. Verification file, then one deploy
 
 1. `verify_domain(url: "https://<their host>")` → one line. Serve it at

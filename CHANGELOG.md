@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.0 — 2026-10-07
+
+- qumge.json: describe a capability in a file at `/.well-known/qumge.json`; `publish_cap` takes `manifest_url`.
+  Per-operation `free_calls` gives topped-up users a free trial. Tool names are unchanged.
+
 ## 0.5.0 — 2026-10-01
 
 - Going live no longer waits for `verify_domain`. A cap on an unverified domain is live and

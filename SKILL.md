@@ -5,7 +5,7 @@ homepage: https://qumge.com
 license: MIT
 metadata:
   author: Qumge
-  version: 0.5.0
+  version: 0.6.0
   category: agent-infrastructure
   clawdbot:
     requires:
@@ -92,7 +92,9 @@ headers.
 2. `get_cap(slug)` — **always read this before the first call.** It lists each operation
    (with its input/output schema when the supplier provided one), which ones are billable,
    the per-call maximum (`hold`), when the charge settles, and the error codes. With a key
-   it also shows the user's monthly limit for this capability.
+   it also shows the user's monthly limit for this capability. An operation's `free_calls`
+   (in `structuredContent.operations[]`, `0` when none) is how many calls each user who has
+   topped up gets free; `search_caps` gives the same per operation in `results[].free_calls`.
 3. Tell the user what it will cost *before* a billable call, in their currency terms
    ("about $0.40 for this video"). If they asked for something expensive or open-ended,
    confirm first.
@@ -108,7 +110,8 @@ headers.
 - A **402** means the balance or this capability's monthly limit stopped the call. Call
   `get_balance` — it returns the top-up link. Hand the link to the user; don't retry.
 - There is **no free trial credit.** Qumge is pay-as-you-go: the user tops up first. Never
-  promise free credits.
+  promise free credits. Some capabilities give a few free calls per operation (`free_calls`)
+  — only to users who have topped up at least once, and only a successful call uses one up.
 - Never tell the user Qumge is cheaper than going direct. For capabilities the price is the same;
   for models, the point is one key and one bill across vendors, not a lower price.
 
@@ -209,6 +212,7 @@ Everything you changed (verification file, endpoint) goes out in **one** deploy.
    review, no form.
 2. `publish_cap(...)` — a **draft**, live for nobody yet. Give each route a `doc` (input
    schema, when to use) so agents know what to send.
+   If the project has a qumge.json, call `publish_cap` with `manifest_url` instead of passing the fields by hand.
 3. `test_cap(slug)` — calls each operation once. Nobody is charged. If it fails, the reply
    says which call failed; fix it and redeploy.
 4. Ask: "Go live at $X per call?" On a yes, `submit_cap(slug)` — **live immediately**,
