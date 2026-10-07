@@ -32,7 +32,7 @@ The answer is in `result.content[0].text`. The same shape works for every tool:
 | `get_earnings` | **yes** | – |
 | `request_payout` | **yes** | `amount_usd`, `confirmed?` |
 | `list_wanted` | – | `limit?` (≤50) |
-| `become_developer` | **yes** | `display_name`, `country`, `entity_type?`, `social_links?` |
+| `become_developer` | **yes** | `display_name`, `country`, `username?` (required if the account has none), `entity_type?`, `social_links?` |
 | `list_caps` | **yes** | – |
 | `verify_domain` | **yes** | `url`; then `url` + `check: true` after the line is deployed. Not needed to go live; releases frozen earnings |
 | `publish_cap` | **yes** | `name` + `base_url` (HTTP API) or `mcp_url` + `mcp_tools` (remote MCP); price book — see `tools/list`. Or `manifest_url` (the project's qumge.json), plus `slug?` to pick one capability and `upstream_token?` when its auth is `api_key` |
@@ -45,6 +45,8 @@ The pre-rename names (`search_apps`, `get_app`, `call_app`, `publish_app`, `test
 
 For a tool that needs a key, send the `Authorization` header, or put
 `"qumge_key": "sk_qumge_…"` in `arguments`.
+
+Every tool, which ones need a key, and the output contract: https://qumge.com/en/docs/mcp
 
 Full schemas, always current:
 
@@ -81,7 +83,7 @@ curl -s https://qumge.com/v1/balance -H "Authorization: Bearer $QUMGE_API_KEY"
 | Anthropic | `POST /v1/messages`, `POST /v1/messages/count_tokens` |
 
 Point any OpenAI- or Anthropic-compatible client at `https://qumge.com/v1` with the
-Qumge key. Setup guides per client: https://qumge.com/en/docs/quickstart
+Qumge key. Setup guides per client: https://qumge.com/en/docs/connect
 
 ## Getting a key (device login)
 

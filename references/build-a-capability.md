@@ -26,8 +26,8 @@ makes all of them — the caller never chains steps or pays for a step. Pick the
 - **Input and output.** What the caller sends, and what comes back, as JSON.
 - **Price per call**, in USD. **Propose a number** ("$0.05 per call — OK?"); it must cover what one call
   costs the user to run (model and API bills, compute). The same price every call is the simple case, and this guide assumes it.
-  If the cost really varies (per second, per token), read "Meter" at
-  https://qumge.com/en/docs/caps before continuing.
+  If the cost really varies (per second, per token), read the price-list fields at
+  https://qumge.com/en/docs/caps/signing before continuing.
 - **How long one call takes.** Qumge waits **30 seconds** for a response. Anything slower
   must be asynchronous — that needs the signed variant (see the last section).
 
@@ -76,7 +76,7 @@ at the end instead.
 ## 3a. Describe it in qumge.json (recommended)
 
 Write `qumge.json` into the project so it is served at `https://<domain>/.well-known/qumge.json`
-(start from `references/qumge.example.json`; spec: https://qumge.com/docs/caps/manifest). Put each billed
+(start from `references/qumge.example.json`; spec: https://qumge.com/en/docs/caps/manifest). Put each billed
 operation's `input_schema` and `output_schema` (or `description`), a suggested `price_usd`, and — if the user
 wants a free trial — `free_calls`. Add the line `verify_domain` gives you as a top-level
 `"verify": "qumge-verify=…"` and the domain is verified when Qumge reads the file. Never put a key in it: the file is public.
@@ -189,7 +189,7 @@ expected  = "v1=" + hex(HMAC_SHA256(signing_secret, canonical))
 - Reject with **401 or 403**. An unsigned request counts as forged.
 - `path_with_query` is the path your server receives, query string included exactly as
   sent. The body is the raw bytes, before any JSON parsing.
-- Copy-paste verifiers for Node, Python and Ruby are at https://qumge.com/en/docs/caps.
+- Copy-paste verifiers for Node, Python and Ruby are at https://qumge.com/en/docs/caps/signing.
 
 Write a unit test with this vector. If your code agrees with it, it agrees with Qumge:
 
