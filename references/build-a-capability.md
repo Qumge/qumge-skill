@@ -73,7 +73,7 @@ endpoint can't tell callers apart, and the price is fixed per call. If the user 
 usage-based billing, per-caller records, or the work takes over ~25 s, use the signed variant
 at the end instead.
 
-## 4a. Describe it in qumge.json (recommended)
+## 3a. Describe it in qumge.json (recommended)
 
 Write `qumge.json` into the project so it is served at `https://<domain>/.well-known/qumge.json`
 (start from `references/qumge.example.json`; spec: https://qumge.com/docs/caps/manifest). Put each billed
@@ -90,7 +90,8 @@ you call `publish_cap` with `manifest_url`.
    `https://<host>/.well-known/qumge-verify.txt` (a static file, or a route returning it as
    text). Skip this if it already says **verified**. The cap can go live before this passes,
    but its earnings stay frozen until it does.
-2. **One deploy** for the endpoint, the verification file and the environment variable. If
+2. **One deploy** for the endpoint, the verification file, `qumge.json` (if you wrote one) and the
+   environment variable. If
    pushing to GitHub deploys the project, ask "Shall I commit and push so it deploys?" and do
    it on a yes. Otherwise ask the user to deploy and wait.
 3. `verify_domain(url:, check: true)`.

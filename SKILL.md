@@ -112,8 +112,8 @@ headers.
 - There is **no free trial credit.** Qumge is pay-as-you-go: the user tops up first. Never
   promise free credits. Some capabilities give a few free calls per operation (`free_calls`)
   — only to users who have topped up at least once, and only a successful call uses one up.
-- Never tell the user Qumge is cheaper than going direct. For capabilities the price is the same;
-  for models, the point is one key and one bill across vendors, not a lower price.
+- Never tell the user Qumge is cheaper than going direct. Each capability's developer sets its
+  price on Qumge; for models, the point is one key and one bill across vendors, not a lower price.
 
 ## Installing a skill
 
