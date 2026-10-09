@@ -11,9 +11,15 @@ Check the other two paths first (see SKILL.md → Publishing). They need no code
 
 | The project already has… | Do this instead |
 |---|---|
-| A remote MCP server (Streamable HTTP, `https://`) | `publish_cap` with `mcp_url` + `mcp_tools`. |
-| A public HTTP API that takes an API key | `publish_cap` with `auth_mode: "api_key"` and the user's key as `upstream_token`. See [Existing API](#existing-api-no-code) below. |
-| Neither | Continue with this guide. |
+| A remote MCP server (Streamable HTTP, `https://`) whose tools work for any caller | `publish_cap` with `mcp_url` + `mcp_tools`. |
+| A public HTTP API that takes an API key, with endpoints that work for any caller | `publish_cap` with `auth_mode: "api_key"` and the user's key as `upstream_token`. See [Existing API](#existing-api-no-code) below. |
+| Neither — or only tools that act on the caller's own account | Continue with this guide. |
+
+**Tools that act on the caller's own account are not "already there".** An MCP tool that reads
+the caller's notes or changes their settings can't be sold as it is: Qumge sends every buyer's
+call with the same developer token, so they would all act on the developer's account. Build an
+account-free operation with this guide instead — and if it needs data per buyer, use the
+[signed variant](#when-you-need-the-signed-variant), which tells buyers apart by `Qumge-User`.
 
 ## 1. Agree on one thing to sell
 
@@ -153,7 +159,8 @@ proves the path exists and the key works.
 ## When you need the signed variant
 
 Use this instead of the API-key endpoint when the user needs **usage-based billing**, needs to
-know **which caller** made a request (`Qumge-User`), or the work takes **over ~25 s**
+know **which caller** made a request (`Qumge-User`) — for example to keep each buyer's own data
+apart — or the work takes **over ~25 s**
 (asynchronous jobs with a status route). Qumge signs every request; your endpoint verifies the
 signature. Publish without `auth_mode` (signature mode is the default); `publish_cap` returns
 the signing secret once — it goes in the production environment as `QUMGE_SIGNING_SECRET`.

@@ -5,7 +5,7 @@ homepage: https://qumge.com
 license: MIT
 metadata:
   author: Qumge
-  version: 0.6.0
+  version: 0.7.0
   category: agent-infrastructure
   clawdbot:
     requires:
@@ -106,7 +106,8 @@ headers.
 
 ### Money is real — be exact about it
 
-- A **5xx or timeout from the app is free.** Say so if it happens; retry once at most.
+- A **5xx, a timeout, or an MCP tool error (`isError`) from the app is free.** Say so if it
+  happens; retry once at most.
 - A **402** means the balance or this capability's monthly limit stopped the call. Call
   `get_balance` — it returns the top-up link. Hand the link to the user; don't retry.
 - There is **no free trial credit.** Qumge is pay-as-you-go: the user tops up first. Never
@@ -150,13 +151,27 @@ hand them a menu of options, and don't ask them to fill anything in that you can
 
 ### 1. Work out what the project has — don't ask
 
-Read the project. Then pick the row — the first one that matches:
+Read the project. **First check whose data its tools touch.** If the existing MCP tools or API
+endpoints act on the *caller's own account* — read their notes, change their settings, show
+their balance, post as them — don't publish them, even though the project "already has an
+MCP server". Qumge forwards every buyer's call with the same developer token, so every buyer
+would be acting on the developer's own account. Instead:
+
+- pick one job that takes an input and returns a complete result **without needing an
+  account** (e.g. "product URL in → ready-to-post copy out", "audio in → clean transcript
+  out"), and add a tool or endpoint for it if none exists (the "Neither" row below);
+- if the job really needs data per buyer, use the **signed variant** in
+  `references/build-a-capability.md`: every call carries `Qumge-User`, a stable anonymous id
+  per buyer, to key that data on.
+
+Ask the user which job to sell only if none is obvious. Then pick the row — the first one that
+matches:
 
 | The project has… | Do this | Code to write |
 |---|---|---|
-| A remote MCP server (`https://…`), with or without an API | `publish_cap` with `mcp_url` + `mcp_tools: [{name:, unit_price_usd:}]`. Ignore the API for now; at the end, tell the user what it does that the MCP doesn't, in one line. | none |
-| A public API that takes an API key | `publish_cap` with `auth_mode: "api_key"`, the user's key as `upstream_token`, and one **exact-path** route billed per call (`meter: "platform"`). | none — ask the user for the key |
-| Neither | Add one small endpoint under `/qumge/` that checks an API key you generate. **Follow `references/build-a-capability.md`.** | one endpoint |
+| A remote MCP server (`https://…`) whose tools do a job for **any** caller, with or without an API | `publish_cap` with `mcp_url` + `mcp_tools: [{name:, unit_price_usd:}]` (plus `upstream_token` if it needs one fixed bearer token — OAuth sign-in isn't supported; servers that need a session handshake are fine). Ignore the API for now; at the end, tell the user what it does that the MCP doesn't, in one line. | none |
+| A public API that takes an API key, with endpoints that work for **any** caller | `publish_cap` with `auth_mode: "api_key"`, the user's key as `upstream_token`, and one **exact-path** route billed per call (`meter: "platform"`). | none — ask the user for the key |
+| Neither — or only tools that act on the caller's own account | Add one small endpoint under `/qumge/` that checks an API key you generate. **Follow `references/build-a-capability.md`.** | one endpoint |
 
 Sell **one operation** first. Never publish a `/**` route, or any admin, account or payment
 endpoint.
@@ -173,6 +188,9 @@ assemble. Concretely:
   wrap them in one endpoint that does all of them (`references/build-a-capability.md`), even
   when the project already has an API or MCP server.
 - An MCP tool or API endpoint that only does part of a job is not sold on its own.
+- **Fail loudly.** A call is charged only when it succeeds: an HTTP endpoint returns non-2xx
+  on failure, an MCP tool marks its result `isError: true`. An error written into an ordinary
+  result is still charged.
 
 Example: a marketing-video product whose MCP server has `analyze_product`, `write_script`,
 `render_video` and `get_job`. Don't sell those four. Sell one operation, **product page URL in

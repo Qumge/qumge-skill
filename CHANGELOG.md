@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.0 — 2026-10-09
+
+- Publishing: check whose data a project's tools touch before publishing them. Tools that act on
+  the caller's own account (their notes, settings, balance) are never published as they are —
+  every buyer's call goes out with the same developer token. Sell an account-free input → result
+  job instead, or use the signed variant and key per-buyer data on `Qumge-User`.
+- An MCP tool error (`isError: true`) is no longer charged; "fail loudly" is now a publishing rule.
+- MCP servers: one fixed bearer token (`upstream_token`), no OAuth sign-in; session-handshake
+  servers work.
+
 ## 0.6.0 — 2026-10-07
 
 - qumge.json: describe a capability in a file at `/.well-known/qumge.json`; `publish_cap` takes `manifest_url`.

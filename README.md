@@ -7,7 +7,7 @@
 
 - **Capabilities** — find a hosted service that does the job (video, transcription,
   publishing…) and call it, billed per call from your Qumge balance at the price its developer
-  sets; a failed call (5xx) costs nothing.
+  sets; a failed call (5xx, timeout, or an MCP tool error) costs nothing.
 - **Skills** — search a curated catalog of popular agent skills and install one into your
   agent without leaving the chat. Free.
 - **Models** — one key for many LLMs through an OpenAI- and Anthropic-compatible gateway.
