@@ -2,10 +2,10 @@
 
 **Audience: Human (project overview)**
 
-[Qumge](https://qumge.com) is the capability layer for agents. This skill teaches your agent
+[Qumge](https://qumge.com) is the Cap layer for agents. This skill teaches your agent
 (Claude Code, Cursor, Codex, OpenClaw, any agent that reads `SKILL.md`) to use it:
 
-- **Capabilities** — find a hosted service that does the job (video, transcription,
+- **Caps** — find a hosted service that does the job (video, transcription,
   publishing…) and call it, billed per call from your Qumge balance at the price its developer
   sets; a failed call (5xx, timeout, or an MCP tool error) costs nothing.
 - **Skills** — search a curated catalog of popular agent skills and install one into your
@@ -53,7 +53,7 @@ Qumge is pay-as-you-go: you top up your balance first, then pay per call.
 |---|---|
 | `SKILL.md` | The agent — what Qumge is and how to use it |
 | `references/api-reference.md` | The agent — the HTTP API, for agents without MCP |
-| `references/build-a-capability.md` | The agent — turning part of the user's project into a capability |
+| `references/build-a-capability.md` | The agent — turning part of the user's project into a Cap |
 | `marketplace.json` | Skill marketplaces |
 
 ## Links

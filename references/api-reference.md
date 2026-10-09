@@ -35,7 +35,7 @@ The answer is in `result.content[0].text`. The same shape works for every tool:
 | `become_developer` | **yes** | `display_name`, `country`, `username?` (required if the account has none), `entity_type?`, `social_links?` |
 | `list_caps` | **yes** | – |
 | `verify_domain` | **yes** | `url`; then `url` + `check: true` after the line is deployed. Not needed to go live; releases frozen earnings |
-| `publish_cap` | **yes** | `name` + `base_url` (HTTP API) or `mcp_url` + `mcp_tools` (remote MCP); price book — see `tools/list`. Or `manifest_url` (the project's qumge.json), plus `slug?` to pick one capability and `upstream_token?` when its auth is `api_key` |
+| `publish_cap` | **yes** | `name` + `base_url` (HTTP API) or `mcp_url` + `mcp_tools` (remote MCP); price book — see `tools/list`. Or `manifest_url` (the project's qumge.json), plus `slug?` to pick one Cap and `upstream_token?` when its auth is `api_key` |
 | `test_cap` | **yes** | `slug` |
 | `submit_cap` | **yes** | `slug` |
 | `cap_status` | **yes** | `slug` |
@@ -55,14 +55,14 @@ curl -s -X POST https://qumge.com/mcp -H 'Content-Type: application/json' \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 ```
 
-## Calling a capability directly
+## Calling a Cap directly
 
 ```
 <METHOD> https://qumge.com/v1/caps/<slug>/<route>
 Authorization: Bearer sk_qumge_…
 ```
 
-Operations, prices and error codes for every live capability, as OpenAPI 3.1:
+Operations, prices and error codes for every live Cap, as OpenAPI 3.1:
 `GET https://qumge.com/v1/caps/openapi.json` (no key). `/v1/apps/...` still works.
 
 Errors come back as `{"error": {"code": "...", "message": "..."}}` — e.g.

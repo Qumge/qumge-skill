@@ -1,4 +1,4 @@
-# Build a capability from the user's project
+# Build a Cap from the user's project
 
 **Audience: AI Agent**
 
@@ -217,7 +217,7 @@ Then:
   failure.** Qumge charges each 2xx and nothing else, so an error returned as 200 bills the
   user for a failure.
 - **Who is calling**: `Qumge-User` (`au_…`) identifies the caller. It's stable per user and
-  different for each capability. Callers never have an account in the user's app. Run the
+  different for each Cap. Callers never have an account in the user's app. Run the
   work under the app's own service account, and store `Qumge-User` on whatever records you
   create.
 - **Slow operations** (over ~25 s): return `202 {"id": "…", "status": "queued"}` as soon as

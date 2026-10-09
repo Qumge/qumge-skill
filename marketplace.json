@@ -1,7 +1,7 @@
 {
   "name": "qumge",
   "displayName": "Qumge",
-  "description": "The capability layer for agents: find and call paid capabilities billed per call, install curated agent skills, and reach many LLMs — one key, one balance.",
+  "description": "The capability layer for agents: find and call paid Caps (one call, one complete result) billed per call, install curated agent skills, and reach many LLMs — one key, one balance.",
   "version": "0.7.0",
   "author": "Qumge",
   "homepage": "https://qumge.com",
@@ -23,7 +23,7 @@
     {
       "name": "qumge",
       "path": "SKILL.md",
-      "description": "Find and call paid capabilities billed per call from one Qumge balance, install curated agent skills, list gateway models, and publish your own capability — from any agent."
+      "description": "Find and call paid Caps (one call, one complete result) billed per call from one Qumge balance, install curated agent skills, list gateway models, and publish your own Cap — from any agent."
     }
   ]
 }

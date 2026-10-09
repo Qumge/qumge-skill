@@ -2,6 +2,9 @@
 
 ## 0.7.0 — 2026-10-09
 
+- Naming: a capability is now called a **Cap** everywhere in prose — "one finished job: one call in,
+  one complete result out, paid per result". Tool names (`search_caps`, `call_cap`, …) are unchanged.
+
 - Publishing: check whose data a project's tools touch before publishing them. Tools that act on
   the caller's own account (their notes, settings, balance) are never published as they are —
   every buyer's call goes out with the same developer token. Sell an account-free input → result

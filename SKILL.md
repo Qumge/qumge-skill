@@ -1,6 +1,6 @@
 ---
 name: qumge
-description: Get things done through Qumge — the capability layer for agents. Find and call paid capabilities (billed per call from the user's Qumge balance), find and install curated agent skills (SKILL.md), and reach many LLMs through one key. Use when the user wants something done that a hosted service can do (make a video, transcribe audio, publish content…), asks for a skill or capability to install, asks which models they can use, asks about their Qumge balance, or wants to publish their own app on Qumge. Also use whenever the user mentions Qumge.
+description: Get things done through Qumge — the capability layer for agents. Find and call paid Caps (short for capabilities — one call in, one complete result out, billed per call from the user's Qumge balance), find and install curated agent skills (SKILL.md), and reach many LLMs through one key. Use when the user wants something done that a hosted service can do (make a video, transcribe audio, publish content…), asks for a skill or Cap to install, asks which models they can use, asks about their Qumge balance, or wants to publish their own app on Qumge. Also use whenever the user mentions Qumge.
 homepage: https://qumge.com
 license: MIT
 metadata:
@@ -21,11 +21,11 @@ Qumge is infrastructure for agents, behind one key and one balance:
 
 | | What it is | Costs |
 |---|---|---|
-| **Capabilities** | Hosted services you call over HTTP (video, transcription, publishing…). The capability runs on its supplier's server; Qumge forwards the call, charges the user, and buys the work from the supplier. | Per call, from the user's balance, at the price its developer sets. |
+| **Caps** | A Cap (short for capability) is one finished job: one call in, one complete result out — a finished video, a transcript, a published post. It runs on its supplier's server; Qumge forwards the call, charges the user, and buys the work from the supplier. | Per call, from the user's balance, at the price its developer sets. |
 | **Skills** | A curated catalog of popular agent skills (SKILL.md files) you can install into the user's agent. | Free. |
 | **Models** | An OpenAI- and Anthropic-compatible LLM gateway. | Per token, from the same balance. |
 
-**Rule of thumb:** the user wants something *done* → search **capabilities**. The user wants
+**Rule of thumb:** the user wants something *done* → search **Caps**. The user wants
 *instructions to install* → search **skills**.
 
 ## Two ways in — pick the first that works
@@ -84,15 +84,15 @@ The user can also mint a key at https://qumge.com/en/gateway/api_keys.
 `Authorization: Bearer` header, or as the `qumge_key` argument on clients that can't set
 headers.
 
-## Using a capability
+## Using a Cap
 
 1. `search_caps(query: "<what the user wants done, in their words>")` — returns the best
    few with price, measured success rate and latency, and a slug. The catalogue is young:
-   if nothing fits, say so and try `search_skills` — never invent a capability or a route.
+   if nothing fits, say so and try `search_skills` — never invent a Cap or a route.
 2. `get_cap(slug)` — **always read this before the first call.** It lists each operation
    (with its input/output schema when the supplier provided one), which ones are billable,
    the per-call maximum (`hold`), when the charge settles, and the error codes. With a key
-   it also shows the user's monthly limit for this capability. An operation's `free_calls`
+   it also shows the user's monthly limit for this Cap. An operation's `free_calls`
    (in `structuredContent.operations[]`, `0` when none) is how many calls each user who has
    topped up gets free; `search_caps` gives the same per operation in `results[].free_calls`.
 3. Tell the user what it will cost *before* a billable call, in their currency terms
@@ -100,7 +100,7 @@ headers.
    confirm first.
 4. `call_cap(slug, operation, input)` — pass the operation name from `get_cap` and an
    `input` object; it is validated against the operation's `input_schema` **before**
-   anything is charged. Older capabilities without a schema still take
+   anything is charged. Older Caps without a schema still take
    `call_cap(slug, path, method, body)`, or call
    `https://qumge.com/v1/caps/<slug>/<route>` directly with the key.
 
@@ -108,12 +108,12 @@ headers.
 
 - A **5xx, a timeout, or an MCP tool error (`isError`) from the app is free.** Say so if it
   happens; retry once at most.
-- A **402** means the balance or this capability's monthly limit stopped the call. Call
+- A **402** means the balance or this Cap's monthly limit stopped the call. Call
   `get_balance` — it returns the top-up link. Hand the link to the user; don't retry.
 - There is **no free trial credit.** Qumge is pay-as-you-go: the user tops up first. Never
-  promise free credits. Some capabilities give a few free calls per operation (`free_calls`)
+  promise free credits. Some Caps give a few free calls per operation (`free_calls`)
   — only to users who have topped up at least once, and only a successful call uses one up.
-- Never tell the user Qumge is cheaper than going direct. Each capability's developer sets its
+- Never tell the user Qumge is cheaper than going direct. Each Cap's developer sets its
   price on Qumge; for models, the point is one key and one bill across vendors, not a lower price.
 
 ## Installing a skill
@@ -138,12 +138,12 @@ Every model uses the same key, at `https://qumge.com/v1` — OpenAI-style
 
 ## Checking the balance
 
-`get_balance` (or `GET https://qumge.com/v1/balance`) — the balance, what each capability
+`get_balance` (or `GET https://qumge.com/v1/balance`) — the balance, what each Cap
 has spent this month against its limit, and a top-up link. It also reports how much of the
-balance is **withdrawable** — capability income only; topped-up money is spent, not cashed
+balance is **withdrawable** — Cap income only; topped-up money is spent, not cashed
 out.
 
-## Publishing the user's own capability
+## Publishing the user's own Cap
 
 You are usually running **inside the project the user wants to sell from**. Do the work; the
 user only answers three things: **the price**, **"it's deployed"**, and **"go live"**. Don't
@@ -244,7 +244,7 @@ one click — it self-tests and goes live.
 Earnings: `get_earnings` shows pending (30-day holdback), frozen (domain not verified yet),
 payable and paid out.
 `request_payout(amount_usd)` once for the fee/tax estimate, show it, then again with
-`confirmed: true`. Only capability income is withdrawable.
+`confirmed: true`. Only Cap income is withdrawable.
 
 ## Errors
 
@@ -262,6 +262,6 @@ payable and paid out.
 ## More
 
 - HTTP reference: `references/api-reference.md`
-- Building a capability from scratch: `references/build-a-capability.md`
+- Building a Cap from scratch: `references/build-a-capability.md`
 - Machine-readable app catalog: https://qumge.com/v1/caps/openapi.json
 - Site index for agents: https://qumge.com/llms.txt
