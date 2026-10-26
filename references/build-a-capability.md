@@ -1,25 +1,48 @@
-# Build a Cap from the user's project
+# Build a complete-result Cap from an existing project
 
-**Audience: AI Agent**
+**Audience: the developer's onboarding Agent.**
 
-Use this when the user wants to sell one thing their project does on Qumge, but the project has
-**no public endpoint** Qumge can call — no remote MCP server and no API that takes a key. Your
-job is to add one small endpoint to their project, publish it and get it live. The user only
-answers three things: the price, "it's deployed", and "go live".
+Start with the complete buyer outcome, not with whether the project has MCP or API.
+Inspect tools, endpoints, internal functions and native jobs. Reuse a single entry point only
+if it delivers the whole outcome; otherwise compose partial steps privately on the provider
+server. You may mix MCP, API and internal functions. If both interfaces exist, choose the
+least-change reliable path; if neither exists, add thin authenticated HTTPS hooks. The buyer
+agent must not orchestrate your internal steps.
 
-Check the other two paths first (see SKILL.md → Publishing). They need no code:
+## Current path: managed manifest v2
 
-| The project already has… | Do this instead |
-|---|---|
-| A remote MCP server (Streamable HTTP, `https://`) whose tools work for any caller | `publish_cap` with `mcp_url` + `mcp_tools`. |
-| A public HTTP API that takes an API key, with endpoints that work for any caller | `publish_cap` with `auth_mode: "api_key"` and the user's key as `upstream_token`. See [Existing API](#existing-api-no-code) below. |
-| Neither — or only tools that act on the caller's own account | Continue with this guide. |
+Each Cap supplies a public HTTPS square icon in `icon_url`, preferably a 256px PNG or WebP. Reuse a suitable project image or prepare one and deploy it with the project; include the URL in the capability manifest. A draft can be saved without it, but publication requires it. Do not pass a local file path or invent an icon URL.
 
-**Tools that act on the caller's own account are not "already there".** An MCP tool that reads
-the caller's notes or changes their settings can't be sold as it is: Qumge sends every buyer's
-call with the same developer token, so they would all act on the developer's account. Build an
-account-free operation with this guide instead — and if it needs data per buyer, use the
-[signed variant](#when-you-need-the-signed-variant), which tells buyers apart by `Qumge-User`.
+
+1. Reuse the owner's approved outcome, price, deployment and publication scope. Ask only for
+   missing initial pricing, a price change or unclear authorization; do not ask again for an
+   approval already given. A price in a generated manifest is not itself approval.
+2. Read https://qumge.com/en/docs/caps/managed.md. Declare one fixed-price operation with
+   complete input/output schemas, examples, limits and completion criteria. Use a named
+   private connection; credentials never belong in the public manifest.
+3. Reuse native functions/jobs, request_id deduplication, workers, private files and status.
+   Prefer identity: order; use buyer identity only with authorized buyer-owned state.
+   Do not build another Qumge wallet, buyer, order or usage-reporting system.
+4. With neither API nor MCP, use the current Ruby adapter example at
+   https://qumge.com/examples/cap-adapter-ruby/README.md. Mount invoke/status and authenticated
+   isolated fixtures around existing business functions, then deploy reachable HTTPS within
+   the owner's authorization. Existing partial APIs/MCP tools can use the same thin wrapper.
+5. The onboarding agent tests full delivery, failure recovery, idempotency and isolation on
+   the project side, then calls test_cap. Report connection, fixture and real_delivery
+   separately. Native OPTIONS/tools-list checks never prove generation or final delivery.
+   Pending jobs, acceptance responses and intermediate assets are not finished results.
+   Fixtures must complete and match output_schema; business quality still needs local or
+   explicitly authorized real-result inspection. Quote a budget before paid real tests.
+6. publish_cap(manifest_url:, slug:) creates/updates a draft. After deploying and passing
+   required checks, submit_cap makes it live only within existing owner publication approval.
+   Do not repeat an approval that was already given; ask only for missing scope.
+
+## Legacy integration examples
+
+The examples below describe older per-response and usage-reporting integrations. They are
+retained for maintaining those deployments, not as the default for new Caps. Do not copy their
+usage-key, balance or real-call self-test flow into a new managed complete-result integration.
+The current managed guide above controls when these historical examples differ.
 
 ## 1. Agree on one thing to sell
 

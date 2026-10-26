@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.1 — 2026-10-26
+
+- Choose the complete buyer outcome before selecting MCP, API or internal functions; compose partial steps privately.
+- Use managed manifest v2, distinguish connection/fixture/real delivery, and reuse existing owner approvals.
+- Require a public HTTPS Cap icon before publication; preserve account-data isolation guidance.
+
 ## 0.7.0 — 2026-10-09
 
 - Naming: a capability is now called a **Cap** everywhere in prose — "one finished job: one call in,

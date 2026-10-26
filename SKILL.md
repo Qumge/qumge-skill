@@ -5,7 +5,7 @@ homepage: https://qumge.com
 license: MIT
 metadata:
   author: Qumge
-  version: 0.7.0
+  version: 0.7.1
   category: agent-infrastructure
   clawdbot:
     requires:
@@ -145,106 +145,84 @@ out.
 
 ## Publishing the user's own Cap
 
-You are usually running **inside the project the user wants to sell from**. Do the work; the
-user only answers three things: **the price**, **"it's deployed"**, and **"go live"**. Don't
-hand them a menu of options, and don't ask them to fill anything in that you can work out.
-
-### 1. Work out what the project has — don't ask
-
-Read the project. **First check whose data its tools touch.** If the existing MCP tools or API
-endpoints act on the *caller's own account* — read their notes, change their settings, show
-their balance, post as them — don't publish them, even though the project "already has an
-MCP server". Qumge forwards every buyer's call with the same developer token, so every buyer
-would be acting on the developer's own account. Instead:
-
-- pick one job that takes an input and returns a complete result **without needing an
-  account** (e.g. "product URL in → ready-to-post copy out", "audio in → clean transcript
-  out"), and add a tool or endpoint for it if none exists (the "Neither" row below);
-- if the job really needs data per buyer, use the **signed variant** in
-  `references/build-a-capability.md`: every call carries `Qumge-User`, a stable anonymous id
-  per buyer, to key that data on.
-
-Ask the user which job to sell only if none is obvious. Then pick the row — the first one that
-matches:
-
-| The project has… | Do this | Code to write |
-|---|---|---|
-| A remote MCP server (`https://…`) whose tools do a job for **any** caller, with or without an API | `publish_cap` with `mcp_url` + `mcp_tools: [{name:, unit_price_usd:}]` (plus `upstream_token` if it needs one fixed bearer token — OAuth sign-in isn't supported; servers that need a session handshake are fine). Ignore the API for now; at the end, tell the user what it does that the MCP doesn't, in one line. | none |
-| A public API that takes an API key, with endpoints that work for **any** caller | `publish_cap` with `auth_mode: "api_key"`, the user's key as `upstream_token`, and one **exact-path** route billed per call (`meter: "platform"`). | none — ask the user for the key |
-| Neither — or only tools that act on the caller's own account | Add one small endpoint under `/qumge/` that checks an API key you generate. **Follow `references/build-a-capability.md`.** | one endpoint |
-
-Sell **one operation** first. Never publish a `/**` route, or any admin, account or payment
-endpoint.
-
-**Every billed operation must deliver one complete result.** The caller is an agent: it sends
-one clear input and must get back one clear output it can use — not a fragment it has to
-assemble. Concretely:
-
-- One thing the caller wants = one billed operation, with a `doc` that has `input_schema`,
-  `output_schema` and an `example_input`.
-- Helper steps (job status, polling, listing options) are **free** (`billable: false`) — or
-  left out of the price book.
-- If the result needs several of the project's calls in a row, **don't publish the steps** —
-  wrap them in one endpoint that does all of them (`references/build-a-capability.md`), even
-  when the project already has an API or MCP server.
-- An MCP tool or API endpoint that only does part of a job is not sold on its own.
-- **Fail loudly.** A call is charged only when it succeeds: an HTTP endpoint returns non-2xx
-  on failure, an MCP tool marks its result `isError: true`. An error written into an ordinary
-  result is still charged.
-
-Example: a marketing-video product whose MCP server has `analyze_product`, `write_script`,
-`render_video` and `get_job`. Don't sell those four. Sell one operation, **product page URL in
-→ finished short video out**, that runs all of them; its job-status route is free.
+Each Cap supplies a public HTTPS square icon in `icon_url`, preferably a 256px PNG or WebP. Reuse a suitable project image or prepare one and deploy it with the project; include the URL in the capability manifest. A draft can be saved without it, but publication requires it. Do not pass a local file path or invent an icon URL.
 
 
+You are usually running inside the project the user wants to sell from. Inspect it and do the
+work; do not ask the owner to fill in integration details you can determine yourself.
 
-### 2. Suggest a price — don't ask the user to invent one
+### 1. Choose the complete result before the interface
 
-Estimate what one call costs to run (model and API bills, compute), add a margin, and propose
-one number per call: "I'd charge $0.05 per call — OK?". Use what they answer.
+**Start with the complete buyer outcome:** state the clear input, full usable output and
+completion criteria before choosing an interface. Inventory existing MCP tools, API endpoints,
+business functions and native jobs. A transport is not a capability boundary.
 
-### 3. Prove the domain — `verify_domain`
+| What the existing project can do | What you do |
+|---|---|
+| One MCP tool delivers the full outcome | Reuse it; configure authentication, schemas, idempotency and private async status as needed. |
+| One API endpoint delivers the full outcome | Reuse it with the same complete-result contract. |
+| API and MCP both exist | Compare complete coverage and reliability; choose the least-change reliable path, not MCP by default. |
+| Existing tools/endpoints deliver only parts | Compose them on the provider server; mix MCP, API and internal functions when useful. |
+| Neither API nor MCP exists | Add thin authenticated HTTPS invoke/status hooks around existing business functions and jobs. |
 
-Going live does **not** wait for this. A cap on an unverified domain goes live and charges
-callers as usual, but the user's earnings from it stay **frozen** until the domain is verified;
-verifying releases them (each call's share matures 30 days after the call). A domain another
-developer has verified can't be used at all. So do it in the same deploy, not later.
+Sell one operation first. Do not expose catch-all, admin, account or payment routes.
+For example, product analysis, scripting, rendering and status remain private steps; sell
+“product facts in → finished video out”. The buyer agent submits once and reads free status,
+rather than orchestrating supplier internals. Existing API/MCP access may still need adaptation.
 
-1. `verify_domain(url: "<the service url>")`. If it says **verified**, go on.
-2. Otherwise it returns one line. Put it in the project so it is served at
-   `https://<host>/.well-known/qumge-verify.txt` (a static file, or a route returning the line
-   as text) — it ships with the next deploy, together with any code you added.
-3. After the deploy: `verify_domain(url:, check: true)`. Not found yet → check the file is
-   live at that address; a DNS TXT record with the same line on the host itself also works.
+Use manifest v2 and managed complete-result execution. Read
+https://qumge.com/en/docs/caps/managed.md and `references/build-a-capability.md` first.
+Prefer `identity: order` with self-contained input and isolated products/assets/results.
+Use `identity: buyer` only for buyer-owned state with explicit account authorization.
+Before reusing a tool, check whose data it touches. Never sell caller-account tools
+(reading private notes, changing settings, showing a balance or posting as the owner) through
+a shared developer token. Choose an input-to-result job that needs no buyer account, or use
+`identity: buyer` with the authenticated stable buyer_key and explicit buyer-account
+authorization. A service account is not authorization to share one user's data with all buyers.
+For legacy HTTP failures return non-2xx; MCP failures use isError. Managed operations report
+failed status rather than putting an error inside a succeeded result.
 
-### 4. Deploy — one deploy for everything
+Reuse native jobs, atomic durable request_id deduplication and existing workers. Do not add
+Qumge-specific buyer, wallet, order, ledger or usage-reporting tables. Keep credentials private.
 
-Everything you changed (verification file, endpoint) goes out in **one** deploy.
-- If pushing to GitHub deploys the project (Render, Vercel, Fly, Netlify, …), ask "Shall I
-  commit and push so it deploys?" and do it on a yes.
-- Otherwise: "Deploy once now and tell me when it's live." Then wait.
+### 2. Reuse authorization; propose only missing prices
 
-### 5. Publish, test, go live
+Use prices and deployment/publication authorization already approved in this session; do not
+ask again. If no price is approved, estimate upstream cost, retry/storage cost and platform
+share, then propose one fixed price per operation. Ask only for initial pricing, price changes
+or unclear scope. A manifest price or an agent's suggestion alone is not owner approval.
+Authorization to implement or deploy does not automatically authorize publication or paid tests.
 
-1. `become_developer(display_name, country)` — once per account, if `publish_cap` asks. No
-   review, no form.
-2. `publish_cap(...)` — a **draft**, live for nobody yet. Give each route a `doc` (input
-   schema, when to use) so agents know what to send.
-   If the project has a qumge.json, call `publish_cap` with `manifest_url` instead of passing the fields by hand.
-3. `test_cap(slug)` — calls each operation once. Nobody is charged. If it fails, the reply
-   says which call failed; fix it and redeploy.
-4. Ask: "Go live at $X per call?" On a yes, `submit_cap(slug)` — **live immediately**,
-   agents can be charged from that moment. The user can also click go live under
-   "My drafts" on the Publish page.
-5. `cap_status(slug)` / `list_caps` — checklist and state at any time.
+### 3. Prepare, deploy and test
 
-The user can also do all of this on the Publish page: paste the service URL, set the price,
-one click — it self-tests and goes live.
+1. Use the owner's Qumge key; if missing, use device login above. Open the developer account
+   with `become_developer` if needed, including a username when required.
+2. Define input/output schemas, fixed price, execution mapping, time limit, result retention,
+   private status and idempotency. Reuse a named connection across Caps. Publish the draft
+   with `publish_cap(manifest_url:, slug:)`; keep API keys out of the manifest.
+3. Implement provider-side composition only where necessary. Deploy within existing owner
+   authorization; ask for missing access, not for permission already granted. Reuse the normal
+   deployment workflow, workers and storage. Verify the actually running version.
+4. Test complete delivery, partial/failed work, lost-response retries and buyer isolation on
+   the project side. Use local/offline fixtures first. A real paid generation needs an explicit
+   budget and owner authorization; never silently trigger one as a publishing probe.
+5. Call `test_cap(slug)` for platform validation. Inspect `verification`: `connection`,
+   `fixture` and `real_delivery`, each `passed`, `failed` or `not_tested`. Managed wrappers use
+   authenticated isolated fixtures; native services without safe fixtures get non-generating
+   OPTIONS/tools-list checks only. Never claim every operation was really generated or free
+   upstream just because the platform self-test passed.
+6. Acceptance/job IDs and queued/running work are not complete delivery. A fixture must reach
+   a terminal success and match output_schema; schema-valid data still needs project-side
+   business-quality validation. Fixture success is not real-delivery proof.
+7. When required platform checks pass, use existing publication authorization and call
+   `submit_cap(slug)`. If that authorization or the price is missing, present the ready draft
+   and ask only for what is missing. `cap_status` / `list_caps` show current state.
 
-Earnings: `get_earnings` shows pending (30-day holdback), frozen (domain not verified yet),
-payable and paid out.
-`request_payout(amount_usd)` once for the fee/tax estimate, show it, then again with
-`confirmed: true`. Only Cap income is withdrawable.
+Domain verification is required before withdrawing income, not before publishing. Use
+`verify_domain` when needed; unverified-domain income stays frozen, and another developer's
+verified domain cannot be claimed. Earnings and payouts use `get_earnings` and `request_payout`;
+only capability income is withdrawable. A self-test, deployment, live listing and real delivery
+are separate states: report each honestly.
 
 ## Errors
 
