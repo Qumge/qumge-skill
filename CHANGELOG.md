@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.2 — 2026-10-27
+
+- Developers can take their own Cap down and put it back: `delist_cap` stops calls at once
+  (404 `cap_delisted`, so a caller can tell "the developer closed" from "qumge stopped it"),
+  the public page stays up marked as delisted, and `relist_cap` needs no new review. A service
+  address changed while it was down is retested before it goes back live.
+
 ## 0.7.1 — 2026-10-26
 
 - Choose the complete buyer outcome before selecting MCP, API or internal functions; compose partial steps privately.

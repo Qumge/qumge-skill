@@ -5,7 +5,7 @@ homepage: https://qumge.com
 license: MIT
 metadata:
   author: Qumge
-  version: 0.7.1
+  version: 0.7.2
   category: agent-infrastructure
   clawdbot:
     requires:
@@ -224,6 +224,12 @@ verified domain cannot be claimed. Earnings and payouts use `get_earnings` and `
 only capability income is withdrawable. A self-test, deployment, live listing and real delivery
 are separate states: report each honestly.
 
+To stop selling a Cap, call `delist_cap(slug)` — calls stop at once (they get a 404
+`cap_delisted`), it leaves the store, and its page stays up marked as delisted. `relist_cap(slug)`
+puts it back with no new review; if the service address changed while it was down, the platform
+retests it first and the call fails until that passes. Confirm with the user before delisting:
+anyone already using it loses access immediately.
+
 ## Errors
 
 **Don't surface raw errors to the user.** Handle them:
@@ -232,7 +238,7 @@ are separate states: report each honestly.
 |---|---|---|
 | `401` | missing/bad key | Run the device login above, save the key, retry once. |
 | `402` | balance or monthly cap | `get_balance`, give the user the top-up link. Don't retry. |
-| `404` | unknown slug or route | Re-read `search_caps` / `get_cap`. Don't guess paths. |
+| `404` | unknown slug or route, or `cap_delisted` | Re-read `search_caps` / `get_cap`. Don't guess paths. `cap_delisted` means its developer took it down — don't retry, find another Cap. |
 | `422` | bad arguments | Fix them against `get_cap` (its `input_schema`). Don't resend as-is. |
 | `429` | rate limited | Back off, retry once. Never loop. |
 | `5xx` / timeout | app or upstream trouble | Free. Retry once, then tell the user plainly. |

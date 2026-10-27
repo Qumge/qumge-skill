@@ -28,6 +28,7 @@ The answer is in `result.content[0].text`. The same shape works for every tool:
 | `list_categories` | – | – |
 | `list_models` | – | `query?`, `limit?` (≤60) |
 | `call_cap` | **yes** | `slug` + `operation`, `input` — or the older `path`, `method?`, `query?`, `body?`, `content_type?`, `accept?` |
+| `get_cap_job` | **yes** | `job_id` (the platform id `call_cap` returned); `refresh_result: true` to explicitly renew a supported result URL. Free — ordinary reads don't call the provider |
 | `get_balance` | **yes** | – |
 | `get_earnings` | **yes** | – |
 | `request_payout` | **yes** | `amount_usd`, `confirmed?` |
@@ -39,6 +40,8 @@ The answer is in `result.content[0].text`. The same shape works for every tool:
 | `test_cap` | **yes** | `slug` |
 | `submit_cap` | **yes** | `slug` |
 | `cap_status` | **yes** | `slug` |
+| `delist_cap` | **yes** | `slug` — take your own Cap down; calls stop at once (404 `cap_delisted`), the public page stays up |
+| `relist_cap` | **yes** | `slug` — put it back, no new review; a service address changed while it was down is retested first |
 
 The pre-rename names (`search_apps`, `get_app`, `call_app`, `publish_app`, `test_app`,
 `submit_app_review`, `app_status`, `list_apps`) still dispatch; they are not listed.
