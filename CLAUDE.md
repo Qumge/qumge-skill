@@ -1,0 +1,3 @@
+# qumg-skill
+
+@AGENTS.md
