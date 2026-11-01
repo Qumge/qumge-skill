@@ -1,69 +1,89 @@
-# Qumge Skills
+# Qumge — 为你的 Agent 找到能力
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-两个 skill，共用一个托管 MCP：使用现有能力，或将自己项目中的工作流发布为能力。
+给 Agent 一个任务，找到合适能力，先看交付内容和价格，再决定是否执行。
 
-| Skill | 适用人群 | Agent 做什么 |
-|---|---|---|
-| **qumge** | 能力买家与模型用户 | 查找和调用付费 Cap、安装目录中的 skill、接入模型客户端、查询消费余额。 |
-| **qumge-publish** | 开发者与能力提供方 | 分析项目、准备完整结果合同、运行离线预检、适配和部署、测试、发布或管理已有 Cap。 |
+## 从这里开始：安装、确认、免费搜索
 
-## 安装
+安装 skill 和搜索能力不需要 Qumge 账户、API 密钥或充值，也不会更换你现有的 Agent 或模型。
 
-原有使用者入口及安装命令保持兼容：
+### 1. 在你的项目中安装
+
+先准备支持 skill 的编程 Agent、[Node.js LTS](https://nodejs.org/)（含 npm/npx）和 [Git](https://git-scm.com/downloads)。可运行 `node --version`、`npx --version`、`git --version` 检查。在你使用 Agent 的**项目目录**中打开终端。
+
+根据你的 Agent，**选择一条**命令：
+
+**Codex**
+
+```bash
+npx skills add Qumge/qumge-skill --skill qumge --agent codex
+```
+
+**Claude Code**
+
+```bash
+npx skills add Qumge/qumge-skill --skill qumge --agent claude-code
+```
+
+**Cursor**
+
+```bash
+npx skills add Qumge/qumge-skill --skill qumge --agent cursor
+```
+
+其他兼容 Agent 可以使用原有命令，出现选择时选你正在使用的 Agent：
 
 ```bash
 npx skills add Qumge/qumge-skill
 ```
 
-单独安装开发者 skill：
+首次运行 npx 可能询问是否下载包，确认包名是 `skills` 后继续。若找不到 npx，请先安装 Node.js 并重新打开终端。如果安装器询问范围，选择 **Project（当前项目）**，不要选 Global。按此流程只安装到当前项目；在其他项目使用时需要在那里安装。
+
+只使用 ChatGPT 或 Claude 网页版？请使用 [MCP 连接器指南](https://qumge.com/zh/docs/connect)，不要在网页聊天框运行 npx。
+
+### 2. 确认安装成功
+
+安装器应显示 `Installation complete` 和 `qumge`。检查 `.agents/skills/qumge/SKILL.md` 或安装器提示的 Agent 专用位置是否存在。回到**同一个项目**的 Agent；如果看不到新技能，重新打开会话。Codex 可用 `$qumge` 显式选中它。
+
+### 3. 免费找到第一个能力
+
+在 Agent 聊天框说：
+
+> 用 Qumge 找会议纪要能力，告诉我需要提供什么、交付什么和价格，先不要执行。
+
+Agent 应给出合适能力及输入、完整交付和价格，或者明确说明没有合适结果。仅搜索无需登录或充值。比如，YouTube 内容概览需要受支持的公开视频链接；生成视频不能替代总结视频。
+
+[浏览能力市场](https://qumge.com/zh/caps) · [分步安装指南](https://qumge.com/zh/docs/install)
+
+## 还需要配置 MCP 吗？
+
+**qumge skill** 是操作指引，**Qumge MCP** 是托管工具连接。支持 HTTP 工具的编程 Agent 可以按自带 HTTP 参考搜索，无需另配 MCP。希望使用原生 MCP 工具，或客户端没有 HTTP 工具时，再看 [MCP 接入说明](https://github.com/Qumge/qumge-mcp/blob/main/README.zh-CN.md)。安装 skill 不会自动修改 MCP 配置。
+
+只有选好付费任务和预算后，Agent 才应请求登录授权及可用余额。两个 skill 的说明和面向用户的报告跟随用户语言，可使用中文或英文；命令、工具名与协议字段保持原样。
+
+## 开发者：发布你自己的能力
+
+| Skill | 适用人群 | 用途 |
+|---|---|---|
+| **qumge** | 能力使用者 | 查找和调用 Cap、安装目录中的 skill、发现模型、查询余额。 |
+| **qumge-publish** | 能力提供方 | 分析项目、定义完整结果合同、预检、适配和部署，在授权范围内测试和发布。 |
+
+需要发布时，再安装开发者入口：
 
 ```bash
 npx skills add Qumge/qumge-skill --full-depth --skill qumge-publish
 ```
 
-`--full-depth` 很重要：安装器可能在找到根目录的 SKILL.md 后停止继续发现，只显示 qumge。也可以直接指定开发者 skill 所在目录：
+`--full-depth` 用于继续发现根目录 SKILL.md 以下的 skill。也可直接指定目录：
 
 ```bash
 npx skills add https://github.com/Qumge/qumge-skill/tree/main/skills/qumge-publish
 ```
 
-只查看两个入口，不安装：
+只查看两个入口：`npx skills add Qumge/qumge-skill --full-depth --list`。同时安装两个时，在原有命令后加 `--full-depth --skill qumge qumge-publish`。
 
-```bash
-npx skills add Qumge/qumge-skill --full-depth --list
-```
-
-同时安装两个：
-
-```bash
-npx skills add Qumge/qumge-skill --full-depth --skill qumge qumge-publish
-```
-
-需要支持 SKILL 格式的 Agent。开发者 skill 附带的离线检查器需要 Python 3.10+。安装 skill 不会安装服务运行环境，也不会自动托管本地 CLI。
-
-## 使用 Qumge
-
-客户端支持 MCP 时，连接现有服务：
-
-```bash
-claude mcp add --transport http qumge https://qumge.com/mcp
-```
-
-其他客户端配置见 [Qumge MCP 中文说明](https://github.com/Qumge/qumge-mcp/blob/main/README.zh-CN.md)。两个 skill 共用同一个服务地址、账户和密钥。优先使用 MCP；开发者 skill 自带 HTTP 与认证参考，无需先安装使用者 skill。
-
-使用者可以这样说：
-
-> 帮我找一个能总结这个视频的能力，先告诉我交付内容和价格。
-
-Agent 会在付费调用前读取实际交付内容、计价方式和消费授权范围。模型推理走兼容的模型 API；`list_models` 用于发现模型，不通过 MCP 执行推理。
-
-开发者可以这样说：
-
-> 分析这个项目，准备一个交付完整结果的 Cap。先做本地预检；沿用我已有的部署和发布授权，只询问缺少的定价或访问权限。
-
-两个 skill 的说明、提问与面向用户的报告跟随用户语言，可使用中文或英文。工具名、命令、标识符、JSON 字段及协议值保持原样。SKILL.md 与技术参考保留英文规范，避免两套执行规则产生偏差。
+两个 skill 共用同一账户与托管地址 `https://qumge.com/mcp`。开发者入口独立可用，其离线检查器需要 Python 3.10+；安装不会增加服务运行环境，也不会自动托管本地 CLI。模型推理走兼容模型 API，`list_models` 只用于发现。
 
 ## 发布流程包含什么
 

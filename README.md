@@ -1,63 +1,89 @@
-# Qumge Skills
+# Qumge — find a capability for your agent
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-Two skills, one hosted MCP: use existing capabilities, or publish a workflow from your project.
+Give your agent a task. Find a capability, inspect its deliverables and price, then choose whether to run it.
 
-| Skill | For | What the Agent does |
-|---|---|---|
-| **qumge** | Capability buyers and model users | Find/call paid Caps, install catalog skills, connect a model client and check spending balance. |
-| **qumge-publish** | Developers and capability suppliers | Inspect a project, prepare its complete-result contract, run offline preflight, adapt/deploy, test, publish or manage an existing Cap. |
+## Start here: install, check, search
 
-## Install
+No Qumge account, API key or top-up is needed to install the skill or search capabilities. Your current agent and model stay in place.
 
-The original consumer name and command remain compatible:
+### 1. Install in your project
+
+Have a skill-compatible coding agent, [Node.js LTS](https://nodejs.org/) (includes npm/npx) and [Git](https://git-scm.com/downloads) installed. Check with `node --version`, `npx --version` and `git --version`. Open a terminal in the project you use with your agent.
+
+Choose **one** command for your agent:
+
+**Codex**
+
+```bash
+npx skills add Qumge/qumge-skill --skill qumge --agent codex
+```
+
+**Claude Code**
+
+```bash
+npx skills add Qumge/qumge-skill --skill qumge --agent claude-code
+```
+
+**Cursor**
+
+```bash
+npx skills add Qumge/qumge-skill --skill qumge --agent cursor
+```
+
+For another compatible agent, run the original command and choose your agent if prompted:
 
 ```bash
 npx skills add Qumge/qumge-skill
 ```
 
-Install the new publisher explicitly:
+If npx asks to download a package, check it is the `skills` installer. If npx is missing, install Node.js and reopen the terminal. If asked for installation scope, choose **Project**, not Global. These instructions install into the **current project**. Repeat inside another project when needed.
+
+Only using ChatGPT or Claude in a browser? Use the [MCP connector guide](https://qumge.com/en/docs/connect) instead of running npx in a chat box.
+
+### 2. Check it is installed
+
+The installer should show `Installation complete` and `qumge`. Confirm `.agents/skills/qumge/SKILL.md` or the agent-specific location reported by the installer exists. Return to the **same project** in your agent; reopen the session if it cannot see the new skill. Codex can explicitly select it with `$qumge`.
+
+### 3. Find your first capability for free
+
+Tell your agent:
+
+> Use Qumge to find a meeting-minutes capability. Tell me its required input, deliverables and price. Do not execute it yet.
+
+Expect a suitable capability and its input, complete result and price, or an honest explanation that none fits. Do not sign in or top up just to search. For example, a YouTube overview needs a supported public video link; video generation is not video summarization.
+
+[Browse capabilities](https://qumge.com/en/caps) · [Step-by-step installation guide](https://qumge.com/en/docs/install)
+
+## Do I also need MCP?
+
+The **qumge** skill is the operating guide. **Qumge MCP** is the hosted tool connection. Coding agents with HTTP tools can search through the bundled HTTP reference without extra MCP setup. For native MCP tools or clients without HTTP tools, follow [qumge-mcp](https://github.com/Qumge/qumge-mcp). Installing the skill does not automatically change MCP settings.
+
+Only after choosing a paid task and budget should your agent request sign-in authorization and available balance. Both skills follow your language for explanations and human-readable reports, including English and Simplified Chinese; commands, tool names and protocol fields stay unchanged.
+
+## Developers: publish your own capability
+
+| Skill | For | Purpose |
+|---|---|---|
+| **qumge** | Capability users | Find and call Caps, install catalog skills, discover models and check balance. |
+| **qumge-publish** | Capability suppliers | Inspect a project, prepare the complete-result contract, preflight, adapt/deploy, test and publish within your authorization. |
+
+Install the publisher only when you need it:
 
 ```bash
 npx skills add Qumge/qumge-skill --full-depth --skill qumge-publish
 ```
 
-`--full-depth` matters: an installer can stop at the root SKILL.md and otherwise only find
-qumge. You can also target the publisher folder directly:
+`--full-depth` allows discovery beyond the root SKILL.md. You can also target its directory directly:
 
 ```bash
 npx skills add https://github.com/Qumge/qumge-skill/tree/main/skills/qumge-publish
 ```
 
-List both entries without installing: `npx skills add Qumge/qumge-skill --full-depth --list`.
-For both, add `--full-depth --skill qumge qumge-publish` to the original install command.
-These entries work with SKILL-compatible agents; the publisher requires Python 3.10+ only
-for its bundled offline checker. It does not install a provider runtime or host your CLI.
+List both entries without installing: `npx skills add Qumge/qumge-skill --full-depth --list`. To install both, add `--full-depth --skill qumge qumge-publish` to the original command.
 
-## Use Qumge
-
-Connect the existing MCP when your client supports it:
-
-```bash
-claude mcp add --transport http qumge https://qumge.com/mcp
-```
-
-Other clients: [qumge-mcp](https://github.com/Qumge/qumge-mcp).
-Both skills can use the same endpoint, owner key and account. MCP is preferred; the publisher
-includes its own HTTP/auth reference so it does not require installing the consumer skill.
-
-Try the consumer: "Find a capability that summarizes this video and tell me its price."
-It reads the actual deliverables, pricing and spending scope before a paid call. Models use
-the compatible model API; list_models is discovery, not model inference through MCP.
-
-Try the publisher: "Inspect this project and prepare one complete-result Cap. Do the local
-preflight first; use my existing deployment and publication authorization, and ask only for
-missing pricing or access."
-
-Both skills follow the user's language for explanations and human-readable reports, including
-Simplified Chinese and English. Commands, tool names and protocol fields stay unchanged.
-SKILL.md and technical references remain the single English execution specification.
+Both skills use the same account and hosted endpoint `https://qumge.com/mcp`. The publisher is self-contained and needs Python 3.10+ for its offline checker. It does not install a provider runtime or automatically host a CLI. Models use the compatible model API; `list_models` is discovery, not inference through MCP.
 
 ## What publishing includes
 
