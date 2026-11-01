@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.0 — 2026-11-01
+
+- Preserve the root qumge consumer skill and add self-contained qumge-publish in the same repo.
+- Add offline local-readiness checks, versioned JSON reports, managed-v2 example and resume guidance.
+- Keep legacy reference paths as a publisher pointer/current v2 example; no new MCP or runtime.
+- Document root-skill discovery and explicit full-depth publisher installation.
+- Align tool docs with current migration/confirmation/idempotency interfaces; separate local checks,
+  deployment, platform fixtures, live publication and real delivery.
+
 ## 0.7.2 — 2026-10-27
 
 - Developers can take their own Cap down and put it back: `delist_cap` stops calls at once

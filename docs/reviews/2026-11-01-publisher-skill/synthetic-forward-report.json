@@ -1,0 +1,28 @@
+{
+  "report_version": 1,
+  "scope": "offline_local_readiness",
+  "local_preflight": "blocked",
+  "slug": "row-summary",
+  "findings": [
+    {
+      "code": "https_url",
+      "path": "/connections/reporter",
+      "action": "Set a real HTTPS URL without credentials, query, fragment, local host or example-domain placeholder; reachability is checked after deployment."
+    },
+    {
+      "code": "https_url",
+      "path": "/capabilities/0/icon_url",
+      "action": "Set a real HTTPS URL without credentials, query, fragment, local host or example-domain placeholder; reachability is checked after deployment."
+    }
+  ],
+  "not_checked": [
+    "full_json_schema",
+    "deployment",
+    "provider_authentication",
+    "platform_validation",
+    "owner_authorization",
+    "real_delivery"
+  ],
+  "next_action": "fix_local_findings",
+  "manifest_file_sha256": "0b830de2e3e849762d97932bf8b770973da36b8ae2f03189e33610d103764259"
+}

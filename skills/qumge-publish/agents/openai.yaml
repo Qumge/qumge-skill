@@ -1,0 +1,4 @@
+interface:
+  display_name: "Qumge Publish"
+  short_description: "Publish existing project workflows as Qumge capabilities."
+  default_prompt: "Use $qumge-publish to inspect this project and prepare one complete-result capability for Qumge."

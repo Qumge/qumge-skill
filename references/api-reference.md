@@ -17,7 +17,7 @@ curl -s -X POST https://qumge.com/mcp \
        "params":{"name":"search_caps","arguments":{"query":"make a promo video"}}}'
 ```
 
-The answer is in `result.content[0].text`. The same shape works for every tool:
+Prefer `result.structuredContent` for state and receipts; content text is display copy, not a stable contract. Check top-level error and result.isError before using a result. The same envelope works for every tool:
 
 | Tool | Key | Arguments |
 |---|---|---|
@@ -27,7 +27,7 @@ The answer is in `result.content[0].text`. The same shape works for every tool:
 | `get_skill` | – | `slug`, `include_files?` |
 | `list_categories` | – | – |
 | `list_models` | – | `query?`, `limit?` (≤60) |
-| `call_cap` | **yes** | `slug` + `operation`, `input` — or the older `path`, `method?`, `query?`, `body?`, `content_type?`, `accept?` |
+| `call_cap` | **yes** | `slug` + `operation`, `input`, `idempotency_key?`, `accepted_contract_digest?` — or the older `path`, `method?`, `query?`, `body?`, `content_type?`, `accept?` |
 | `get_cap_job` | **yes** | `job_id` (the platform id `call_cap` returned); `refresh_result: true` to explicitly renew a supported result URL. Free — ordinary reads don't call the provider |
 | `get_balance` | **yes** | – |
 | `get_earnings` | **yes** | – |
@@ -36,8 +36,9 @@ The answer is in `result.content[0].text`. The same shape works for every tool:
 | `become_developer` | **yes** | `display_name`, `country`, `username?` (required if the account has none), `entity_type?`, `social_links?` |
 | `list_caps` | **yes** | – |
 | `verify_domain` | **yes** | `url`; then `url` + `check: true` after the line is deployed. Not needed to go live; releases frozen earnings |
-| `publish_cap` | **yes** | `name` + `base_url` (HTTP API) or `mcp_url` + `mcp_tools` (remote MCP); price book — see `tools/list`. Or `manifest_url` (the project's qumge.json), plus `slug?` to pick one Cap and `upstream_token?` when its auth is `api_key` |
-| `test_cap` | **yes** | `slug` |
+| `publish_cap` | **yes** | Prefer managed-v2 `manifest_url` + `slug?`; configure private provider credentials separately. Advanced manual HTTP/MCP inputs: inspect current tools/list. Creates/updates a draft; does not deploy the project. |
+| `test_cap` | **yes** | `slug`, `price_version?` for exact candidate tests; distinguish connection, fixture and real_delivery |
+| `migrate_cap_contract` | **yes** | `slug`, `action`; inspect tools/list for prepare/test/activate/status/repair_review inputs. Owner-scoped existing-contract migration, not an ordinary new draft. |
 | `submit_cap` | **yes** | `slug` |
 | `cap_status` | **yes** | `slug` |
 | `delist_cap` | **yes** | `slug` — take your own Cap down; calls stop at once (404 `cap_delisted`), the public page stays up |
@@ -96,3 +97,16 @@ curl -s -X POST https://qumge.com/device/token -d device_code=<device_code>
 ```
 
 Details and the polling rules are in `SKILL.md` → *Spending needs the user's key*.
+
+## Consumer and publisher skills
+
+Use qumge for finding/calling Caps and model access. For adapting or managing your own
+service, install qumge-publish from this same repository with
+`npx skills add Qumge/qumge-skill --full-depth --skill qumge-publish`.
+It includes its own auth/HTTP fallback, offline preflight, managed-v2 example and resume guide.
+The platform manifest schema is https://qumge.com/schemas/qumge-manifest/v2.json.
+
+A changed deliverable may require current get_cap contract_state confirmation before passing
+accepted_contract_digest. Old spending permission is not acceptance of a different result.
+Use one stable idempotency_key for the same managed operation/input; read the returned
+platform job ID instead of reissuing a generation. Local file hashes are not platform contract digests.

@@ -1,11 +1,10 @@
 ---
 name: qumge
-description: Get things done through Qumge — the capability layer for agents. Find and call paid Caps (short for capabilities — one call in, one complete result out, billed per call from the user's Qumge balance), find and install curated agent skills (SKILL.md), and reach many LLMs through one key. Use when the user wants something done that a hosted service can do (make a video, transcribe audio, publish content…), asks for a skill or Cap to install, asks which models they can use, asks about their Qumge balance, or wants to publish their own app on Qumge. Also use whenever the user mentions Qumge.
-homepage: https://qumge.com
+description: Use when a user wants to find or call a Qumge capability, read its price and result, find and install catalog skills, connect a model client to Qumge, or check their spending balance. For creating, publishing or managing supplier capabilities and earnings, use qumge-publish instead.
 license: MIT
 metadata:
   author: Qumge
-  version: 0.7.2
+  version: 0.8.0
   category: agent-infrastructure
   clawdbot:
     requires:
@@ -95,6 +94,12 @@ headers.
    it also shows the user's monthly limit for this Cap. An operation's `free_calls`
    (in `structuredContent.operations[]`, `0` when none) is how many calls each user who has
    topped up gets free; `search_caps` gives the same per operation in `results[].free_calls`.
+Before accepting a changed deliverable, inspect get_cap.contract_state and confirm its result,
+price and current spending authority. Only then pass its current contract_digest as
+accepted_contract_digest when required; never silently reuse an old permission. For managed
+work, use a stable idempotency_key for the same operation/input and read its platform job ID
+with get_cap_job rather than reissuing a generation after an uncertain response.
+
 3. Tell the user what it will cost *before* a billable call, in their currency terms
    ("about $0.40 for this video"). If they asked for something expensive or open-ended,
    confirm first.
@@ -107,7 +112,8 @@ headers.
 ### Money is real — be exact about it
 
 - A **5xx, a timeout, or an MCP tool error (`isError`) from the app is free.** Say so if it
-  happens; retry once at most.
+  happens. For managed work reconcile its existing job/idempotency key before retrying;
+  never create another order merely because the first response was uncertain.
 - A **402** means the balance or this Cap's monthly limit stopped the call. Call
   `get_balance` — it returns the top-up link. Hand the link to the user; don't retry.
 - There is **no free trial credit.** Qumge is pay-as-you-go: the user tops up first. Never
@@ -143,92 +149,17 @@ has spent this month against its limit, and a top-up link. It also reports how m
 balance is **withdrawable** — Cap income only; topped-up money is spent, not cashed
 out.
 
-## Publishing the user's own Cap
+## Publishing or managing your own Cap
 
-Each Cap supplies a public HTTPS square icon in `icon_url`, preferably a 256px PNG or WebP. Reuse a suitable project image or prepare one and deploy it with the project; include the URL in the capability manifest. A draft can be saved without it, but publication requires it. Do not pass a local file path or invent an icon URL.
+For developer work, use the separate **qumge-publish** skill from this same repository.
+It covers reading the project, complete-result adaptation, offline preflight, deployment,
+registration, testing, publication, updates and developer income. The same hosted MCP is
+used by both skills; no second account or MCP server is needed.
 
-
-You are usually running inside the project the user wants to sell from. Inspect it and do the
-work; do not ask the owner to fill in integration details you can determine yourself.
-
-### 1. Choose the complete result before the interface
-
-**Start with the complete buyer outcome:** state the clear input, full usable output and
-completion criteria before choosing an interface. Inventory existing MCP tools, API endpoints,
-business functions and native jobs. A transport is not a capability boundary.
-
-| What the existing project can do | What you do |
-|---|---|
-| One MCP tool delivers the full outcome | Reuse it; configure authentication, schemas, idempotency and private async status as needed. |
-| One API endpoint delivers the full outcome | Reuse it with the same complete-result contract. |
-| API and MCP both exist | Compare complete coverage and reliability; choose the least-change reliable path, not MCP by default. |
-| Existing tools/endpoints deliver only parts | Compose them on the provider server; mix MCP, API and internal functions when useful. |
-| Neither API nor MCP exists | Add thin authenticated HTTPS invoke/status hooks around existing business functions and jobs. |
-
-Sell one operation first. Do not expose catch-all, admin, account or payment routes.
-For example, product analysis, scripting, rendering and status remain private steps; sell
-“product facts in → finished video out”. The buyer agent submits once and reads free status,
-rather than orchestrating supplier internals. Existing API/MCP access may still need adaptation.
-
-Use manifest v2 and managed complete-result execution. Read
-https://qumge.com/en/docs/caps/managed.md and `references/build-a-capability.md` first.
-Prefer `identity: order` with self-contained input and isolated products/assets/results.
-Use `identity: buyer` only for buyer-owned state with explicit account authorization.
-Before reusing a tool, check whose data it touches. Never sell caller-account tools
-(reading private notes, changing settings, showing a balance or posting as the owner) through
-a shared developer token. Choose an input-to-result job that needs no buyer account, or use
-`identity: buyer` with the authenticated stable buyer_key and explicit buyer-account
-authorization. A service account is not authorization to share one user's data with all buyers.
-For legacy HTTP failures return non-2xx; MCP failures use isError. Managed operations report
-failed status rather than putting an error inside a succeeded result.
-
-Reuse native jobs, atomic durable request_id deduplication and existing workers. Do not add
-Qumge-specific buyer, wallet, order, ledger or usage-reporting tables. Keep credentials private.
-
-### 2. Reuse authorization; propose only missing prices
-
-Use prices and deployment/publication authorization already approved in this session; do not
-ask again. If no price is approved, estimate upstream cost, retry/storage cost and platform
-share, then propose one fixed price per operation. Ask only for initial pricing, price changes
-or unclear scope. A manifest price or an agent's suggestion alone is not owner approval.
-Authorization to implement or deploy does not automatically authorize publication or paid tests.
-
-### 3. Prepare, deploy and test
-
-1. Use the owner's Qumge key; if missing, use device login above. Open the developer account
-   with `become_developer` if needed, including a username when required.
-2. Define input/output schemas, fixed price, execution mapping, time limit, result retention,
-   private status and idempotency. Reuse a named connection across Caps. Publish the draft
-   with `publish_cap(manifest_url:, slug:)`; keep API keys out of the manifest.
-3. Implement provider-side composition only where necessary. Deploy within existing owner
-   authorization; ask for missing access, not for permission already granted. Reuse the normal
-   deployment workflow, workers and storage. Verify the actually running version.
-4. Test complete delivery, partial/failed work, lost-response retries and buyer isolation on
-   the project side. Use local/offline fixtures first. A real paid generation needs an explicit
-   budget and owner authorization; never silently trigger one as a publishing probe.
-5. Call `test_cap(slug)` for platform validation. Inspect `verification`: `connection`,
-   `fixture` and `real_delivery`, each `passed`, `failed` or `not_tested`. Managed wrappers use
-   authenticated isolated fixtures; native services without safe fixtures get non-generating
-   OPTIONS/tools-list checks only. Never claim every operation was really generated or free
-   upstream just because the platform self-test passed.
-6. Acceptance/job IDs and queued/running work are not complete delivery. A fixture must reach
-   a terminal success and match output_schema; schema-valid data still needs project-side
-   business-quality validation. Fixture success is not real-delivery proof.
-7. When required platform checks pass, use existing publication authorization and call
-   `submit_cap(slug)`. If that authorization or the price is missing, present the ready draft
-   and ask only for what is missing. `cap_status` / `list_caps` show current state.
-
-Domain verification is required before withdrawing income, not before publishing. Use
-`verify_domain` when needed; unverified-domain income stays frozen, and another developer's
-verified domain cannot be claimed. Earnings and payouts use `get_earnings` and `request_payout`;
-only capability income is withdrawable. A self-test, deployment, live listing and real delivery
-are separate states: report each honestly.
-
-To stop selling a Cap, call `delist_cap(slug)` — calls stop at once (they get a 404
-`cap_delisted`), it leaves the store, and its page stays up marked as delisted. `relist_cap(slug)`
-puts it back with no new review; if the service address changed while it was down, the platform
-retests it first and the call fails until that passes. Confirm with the user before delisting:
-anyone already using it loses access immediately.
+Install it with `npx skills add Qumge/qumge-skill --full-depth --skill qumge-publish`, or
+read https://github.com/Qumge/qumge-skill/tree/main/skills/qumge-publish. This handoff is
+not authorization to deploy, publish, spend or withdraw. When asked only to use/buy a Cap,
+stay in the consumer workflow above.
 
 ## Errors
 
@@ -246,6 +177,6 @@ anyone already using it loses access immediately.
 ## More
 
 - HTTP reference: `references/api-reference.md`
-- Building a Cap from scratch: `references/build-a-capability.md`
+- Developer publishing: https://github.com/Qumge/qumge-skill/tree/main/skills/qumge-publish
 - Machine-readable app catalog: https://qumge.com/v1/caps/openapi.json
 - Site index for agents: https://qumge.com/llms.txt

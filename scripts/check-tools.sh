@@ -8,7 +8,7 @@ set -euo pipefail
 endpoint="${QUMGE_MCP_URL:-https://qumge.com/mcp}"
 doc="$(dirname "$0")/../references/api-reference.md"
 
-live="$(curl -sf -X POST "$endpoint" \
+live="$(curl --connect-timeout 10 --max-time 30 -sf -X POST "$endpoint" \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' \

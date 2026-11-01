@@ -16,5 +16,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Check packaged skills and offline readiness behavior
+        run: |
+          python3 scripts/check-package.py
+          python3 -m unittest discover -s tests -v
       - name: Compare docs against the live MCP tool list
-        run: ./scripts/check-tools.sh
+        run: bash scripts/check-tools.sh

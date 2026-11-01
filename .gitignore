@@ -3,3 +3,6 @@ credentials.json
 *.log
 
 .worktrees/
+
+__pycache__/
+*.py[cod]
