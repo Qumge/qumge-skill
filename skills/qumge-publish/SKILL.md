@@ -9,10 +9,19 @@ metadata:
 
 # Publish an existing workflow on Qumge
 
+
 Work in the developer's project using its existing coding, test and deployment tools.
 The hosted Qumge MCP at https://qumge.com/mcp handles registration, checks, publication
 and settlement; it does not read local code or deploy it. This skill adds a reusable
 publishing workflow, not a new runtime, wallet, hosted CLI service or permission to publish.
+
+## Language
+
+Use the user's requested language for explanations, questions and human-readable reports.
+If no language is specified, follow the language of their latest request, including Simplified
+Chinese or English. Keep tool names, commands, identifiers, JSON keys and protocol values
+unchanged. Preserve machine-readable report schemas; explain their findings in the user's
+language. These English instructions are the single maintained execution specification.
 
 ## Start with the outcome
 

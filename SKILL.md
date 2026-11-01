@@ -14,6 +14,7 @@ metadata:
 
 # Qumge Skill
 
+
 **Audience: AI Agent**
 
 Qumge is infrastructure for agents, behind one key and one balance:
@@ -26,6 +27,14 @@ Qumge is infrastructure for agents, behind one key and one balance:
 
 **Rule of thumb:** the user wants something *done* → search **Caps**. The user wants
 *instructions to install* → search **skills**.
+
+## Language
+
+Use the user's requested language for explanations, questions and human-readable reports.
+If no language is specified, follow the language of their latest request, including Simplified
+Chinese or English. Keep tool names, commands, identifiers, JSON keys and protocol values
+unchanged. Preserve machine-readable report schemas; explain their findings in the user's
+language. These English instructions are the single maintained execution specification.
 
 ## Two ways in — pick the first that works
 

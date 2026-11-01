@@ -1,5 +1,7 @@
 # Qumge Skills
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 Two skills, one hosted MCP: use existing capabilities, or publish a workflow from your project.
 
 | Skill | For | What the Agent does |
@@ -52,6 +54,10 @@ the compatible model API; list_models is discovery, not model inference through 
 Try the publisher: "Inspect this project and prepare one complete-result Cap. Do the local
 preflight first; use my existing deployment and publication authorization, and ask only for
 missing pricing or access."
+
+Both skills follow the user's language for explanations and human-readable reports, including
+Simplified Chinese and English. Commands, tool names and protocol fields stay unchanged.
+SKILL.md and technical references remain the single English execution specification.
 
 ## What publishing includes
 
